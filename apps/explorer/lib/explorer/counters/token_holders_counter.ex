@@ -80,8 +80,12 @@ defmodule Explorer.Counters.TokenHoldersCounter do
   end
 
   defp schedule_next_consolidation do
-    # every 30 minutes
-    Process.send_after(self(), :consolidate, 30 * 60 * 1000)
+    config = Application.get_env(:explorer, Explorer.Counters.TransactionCounter)
+
+    if Keyword.get(config, :enable_scheduling) do
+      # every 30 minutes
+      Process.send_after(self(), :consolidate, 30 * 60 * 1000)
+    end
   end
 
   @impl true
