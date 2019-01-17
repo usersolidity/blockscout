@@ -2,7 +2,7 @@ use Mix.Config
 
 # Do not print debug messages in production
 
-config :logger, :console, level: :info
+config :logger, :console, level: :debug
 
 config :logger, :ecto,
   level: :info,
