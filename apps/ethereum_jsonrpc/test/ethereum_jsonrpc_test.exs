@@ -241,7 +241,7 @@ defmodule EthereumJSONRPCTest do
           {:ok, []}
         end)
 
-        assert EthereumJSONRPC.fetch_beneficiaries(1..1, json_rpc_named_arguments) ==
+        assert EthereumJSONRPC.fetch_beneficiaries([1], json_rpc_named_arguments) ==
                  {:ok, %FetchedBeneficiaries{params_set: MapSet.new(), errors: []}}
       end
     end
@@ -883,93 +883,6 @@ defmodule EthereumJSONRPCTest do
   describe "unique_request_id" do
     test "returns integer" do
       assert is_integer(EthereumJSONRPC.unique_request_id())
-    end
-  end
-
-  describe "execute_contract_functions/3" do
-    test "executes the functions with the block_number" do
-      json_rpc_named_arguments = Application.get_env(:explorer, :json_rpc_named_arguments)
-
-      functions = [
-        %{
-          contract_address: "0x0000000000000000000000000000000000000000",
-          data: "0x6d4ce63c",
-          id: "get"
-        }
-      ]
-
-      expect(
-        EthereumJSONRPC.Mox,
-        :json_rpc,
-        fn [%{id: id, method: _, params: [%{data: _, to: _}, _]}], _options ->
-          {:ok,
-           [
-             %{
-               id: id,
-               jsonrpc: "2.0",
-               result: "0x0000000000000000000000000000000000000000000000000000000000000000"
-             }
-           ]}
-        end
-      )
-
-      blockchain_result =
-        {:ok,
-         [
-           %{
-             id: "get",
-             jsonrpc: "2.0",
-             result: "0x0000000000000000000000000000000000000000000000000000000000000000"
-           }
-         ]}
-
-      assert EthereumJSONRPC.execute_contract_functions(
-               functions,
-               json_rpc_named_arguments,
-               block_number: 1000
-             ) == blockchain_result
-    end
-
-    test "executes the functions even when the block_number is not given" do
-      json_rpc_named_arguments = Application.get_env(:explorer, :json_rpc_named_arguments)
-
-      functions = [
-        %{
-          contract_address: "0x0000000000000000000000000000000000000000",
-          data: "0x6d4ce63c",
-          id: "get"
-        }
-      ]
-
-      expect(
-        EthereumJSONRPC.Mox,
-        :json_rpc,
-        fn [%{id: id, method: _, params: [%{data: _, to: _}, "latest"]}], _options ->
-          {:ok,
-           [
-             %{
-               id: id,
-               jsonrpc: "2.0",
-               result: "0x0000000000000000000000000000000000000000000000000000000000000000"
-             }
-           ]}
-        end
-      )
-
-      blockchain_result =
-        {:ok,
-         [
-           %{
-             id: "get",
-             jsonrpc: "2.0",
-             result: "0x0000000000000000000000000000000000000000000000000000000000000000"
-           }
-         ]}
-
-      assert EthereumJSONRPC.execute_contract_functions(
-               functions,
-               json_rpc_named_arguments
-             ) == blockchain_result
     end
   end
 
