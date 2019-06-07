@@ -1,10 +1,12 @@
 defmodule Explorer.ChainTest do
   use Explorer.DataCase
+  use EthereumJSONRPC.Case, async: true
 
   require Ecto.Query
 
   import Ecto.Query
   import Explorer.Factory
+  import Mox
 
   alias Explorer.{Chain, Factory, PagingOptions, Repo}
 
@@ -26,6 +28,10 @@ defmodule Explorer.ChainTest do
   alias Explorer.Counters.AddressesWithBalanceCounter
 
   doctest Explorer.Chain
+
+  setup :set_mox_global
+
+  setup :verify_on_exit!
 
   describe "count_addresses_with_balance_from_cache/0" do
     test "returns the number of addresses with fetched_coin_balance > 0" do
@@ -591,6 +597,20 @@ defmodule Explorer.ChainTest do
     end
   end
 
+  describe "address_to_incoming_transaction_count/1" do
+    test "without transactions" do
+      address = insert(:address)
+
+      assert Chain.address_to_incoming_transaction_count(address) == 0
+    end
+
+    test "with transactions" do
+      %Transaction{to_address: to_address} = insert(:transaction)
+
+      assert Chain.address_to_incoming_transaction_count(to_address) == 1
+    end
+  end
+
   describe "confirmations/1" do
     test "with block.number == block_height " do
       block = insert(:block)
@@ -835,6 +855,21 @@ defmodule Explorer.ChainTest do
     end
   end
 
+  describe "token_contract_address_from_token_name/1" do
+    test "return not found if token doesn't exist" do
+      name = "AYR"
+
+      assert {:error, :not_found} = Chain.token_contract_address_from_token_name(name)
+    end
+
+    test "return the correct token if it exists" do
+      name = "AYR"
+      insert(:token, symbol: name)
+
+      assert {:ok, _} = Chain.token_contract_address_from_token_name(name)
+    end
+  end
+
   describe "find_or_insert_address_from_hash/1" do
     test "returns an address if it already exists" do
       address = insert(:address)
@@ -937,6 +972,26 @@ defmodule Explorer.ChainTest do
     end
   end
 
+  describe "fetch_min_and_max_block_numbers/0" do
+    test "fetches min and max block numbers" do
+      for index <- 5..9 do
+        insert(:block, number: index)
+      end
+
+      assert {5, 9} = Chain.fetch_min_and_max_block_numbers()
+    end
+
+    test "fetches min and max when there are no blocks" do
+      assert {0, 0} = Chain.fetch_min_and_max_block_numbers()
+    end
+
+    test "fetches min and max where there is only one block" do
+      insert(:block, number: 1)
+
+      assert {1, 1} = Chain.fetch_min_and_max_block_numbers()
+    end
+  end
+
   # Full tests in `test/explorer/import_test.exs`
   describe "import/1" do
     @import_data %{
@@ -970,6 +1025,7 @@ defmodule Explorer.ChainTest do
       internal_transactions: %{
         params: [
           %{
+            block_number: 37,
             transaction_hash: "0x53bd884872de3e488692881baeec262e7b95234d3965248c39fe992fffd433e5",
             index: 0,
             trace_address: [],
@@ -1274,6 +1330,24 @@ defmodule Explorer.ChainTest do
     end
   end
 
+  describe "block_hash_by_number/1" do
+    test "without blocks returns empty map" do
+      assert Chain.block_hash_by_number([]) == %{}
+    end
+
+    test "with consensus block returns mapping" do
+      block = insert(:block)
+
+      assert Chain.block_hash_by_number([block.number]) == %{block.number => block.hash}
+    end
+
+    test "with non-consensus block does not return mapping" do
+      block = insert(:block, consensus: false)
+
+      assert Chain.block_hash_by_number([block.number]) == %{}
+    end
+  end
+
   describe "list_top_addresses/0" do
     test "without addresses with balance > 0" do
       insert(:address, fetched_coin_balance: 0)
@@ -1315,25 +1389,25 @@ defmodule Explorer.ChainTest do
     end
   end
 
-  describe "get_blocks_without_reward/1" do
+  describe "stream_blocks_without_rewards/2" do
     test "includes consensus blocks" do
       %Block{hash: consensus_hash} = insert(:block, consensus: true)
 
-      assert [%Block{hash: ^consensus_hash}] = Chain.get_blocks_without_reward()
+      assert {:ok, [%Block{hash: ^consensus_hash}]} = Chain.stream_blocks_without_rewards([], &[&1 | &2])
     end
 
     test "does not include consensus block that has a reward" do
       %Block{hash: consensus_hash, miner_hash: miner_hash} = insert(:block, consensus: true)
       insert(:reward, address_hash: miner_hash, block_hash: consensus_hash)
 
-      assert [] = Chain.get_blocks_without_reward()
+      assert {:ok, []} = Chain.stream_blocks_without_rewards([], &[&1 | &2])
     end
 
     # https://github.com/poanetwork/blockscout/issues/1310 regression test
     test "does not include non-consensus blocks" do
       insert(:block, consensus: false)
 
-      assert [] = Chain.get_blocks_without_reward()
+      assert {:ok, []} = Chain.stream_blocks_without_rewards([], &[&1 | &2])
     end
   end
 
@@ -2279,6 +2353,52 @@ defmodule Explorer.ChainTest do
     end
   end
 
+  describe "gas_payment_by_block_hash/1" do
+    setup do
+      number = 1
+
+      %{consensus_block: insert(:block, number: number, consensus: true), number: number}
+    end
+
+    test "without consensus block hash has no key", %{consensus_block: consensus_block, number: number} do
+      non_consensus_block = insert(:block, number: number, consensus: false)
+
+      :transaction
+      |> insert(gas_price: 1)
+      |> with_block(consensus_block, gas_used: 1)
+
+      :transaction
+      |> insert(gas_price: 1)
+      |> with_block(consensus_block, gas_used: 2)
+
+      assert Chain.gas_payment_by_block_hash([non_consensus_block.hash]) == %{}
+    end
+
+    test "with consensus block hash without transactions has key with 0 value", %{
+      consensus_block: %Block{hash: consensus_block_hash}
+    } do
+      assert Chain.gas_payment_by_block_hash([consensus_block_hash]) == %{
+               consensus_block_hash => %Wei{value: Decimal.new(0)}
+             }
+    end
+
+    test "with consensus block hash with transactions has key with value", %{
+      consensus_block: %Block{hash: consensus_block_hash} = consensus_block
+    } do
+      :transaction
+      |> insert(gas_price: 1)
+      |> with_block(consensus_block, gas_used: 2)
+
+      :transaction
+      |> insert(gas_price: 3)
+      |> with_block(consensus_block, gas_used: 4)
+
+      assert Chain.gas_payment_by_block_hash([consensus_block_hash]) == %{
+               consensus_block_hash => %Wei{value: Decimal.new(14)}
+             }
+    end
+  end
+
   describe "missing_block_number_ranges/1" do
     # 0000
     test "0..0 without blocks" do
@@ -2950,6 +3070,76 @@ defmodule Explorer.ChainTest do
     end
   end
 
+  describe "update_replaced_transactions/2" do
+    test "update replaced transactions" do
+      replaced_transaction_hash = "0x2a263224a95275d77bc30a7e131bc64d948777946a790c0915ab293791fbcb61"
+
+      address = insert(:address, hash: "0xb7cffe2ac19b9d5705a24cbe14fef5663af905a6")
+
+      insert(:transaction,
+        from_address: address,
+        nonce: 1,
+        block_hash: nil,
+        index: nil,
+        block_number: nil,
+        hash: replaced_transaction_hash
+      )
+
+      mined_transaction_hash = "0x1a263224a95275d77bc30a7e131bc64d948777946a790c0915ab293791fbcb61"
+      block = insert(:block)
+
+      mined_transaction =
+        insert(:transaction,
+          from_address: address,
+          nonce: 1,
+          index: 0,
+          block_hash: block.hash,
+          block_number: block.number,
+          cumulative_gas_used: 1,
+          gas_used: 1,
+          hash: mined_transaction_hash
+        )
+
+      second_mined_transaction_hash = "0x3a263224a95275d77bc30a7e131bc64d948777946a790c0915ab293791fbcb61"
+      second_block = insert(:block)
+
+      insert(:transaction,
+        from_address: address,
+        nonce: 1,
+        index: 0,
+        block_hash: second_block.hash,
+        block_number: second_block.number,
+        cumulative_gas_used: 1,
+        gas_used: 1,
+        hash: second_mined_transaction_hash
+      )
+
+      {1, _} =
+        Chain.update_replaced_transactions([
+          %{
+            block_hash: mined_transaction.block_hash,
+            nonce: mined_transaction.nonce,
+            from_address_hash: mined_transaction.from_address_hash
+          }
+        ])
+
+      replaced_transaction = Repo.get(Transaction, replaced_transaction_hash)
+
+      assert replaced_transaction.status == :error
+      assert replaced_transaction.error == "dropped/replaced"
+
+      found_mined_transaction = Repo.get(Transaction, mined_transaction_hash)
+
+      assert found_mined_transaction.status == nil
+      assert found_mined_transaction.error == nil
+
+      second_mined_transaction = Repo.get(Transaction, second_mined_transaction_hash)
+
+      assert second_mined_transaction.status == nil
+      assert second_mined_transaction.error == nil
+    end
+  end
+
   describe "stream_unfetched_token_balances/2" do
     test "executes the given reducer with the query result" do
       address = insert(:address, hash: "0xc45e4830dff873cf8b70de2b194d0ddd06ef651e")
@@ -3029,7 +3219,7 @@ defmodule Explorer.ChainTest do
 
       expected_response =
         [token1, token2]
-        |> Enum.sort(&(&1.updated_at < &2.updated_at))
+        |> Enum.sort(&(Timex.to_unix(&1.updated_at) < Timex.to_unix(&2.updated_at)))
         |> Enum.map(& &1.contract_address_hash)
 
       assert Chain.stream_cataloged_token_contract_address_hashes([], &(&2 ++ [&1])) == {:ok, expected_response}
@@ -3323,26 +3513,48 @@ defmodule Explorer.ChainTest do
 
   describe "uncataloged_token_transfer_block_numbers/0" do
     test "returns a list of block numbers" do
-      log = insert(:token_transfer_log)
+      block = insert(:block)
+      address = insert(:address)
+
+      log =
+        insert(:token_transfer_log,
+          transaction:
+            insert(:transaction,
+              block_number: block.number,
+              block_hash: block.hash,
+              cumulative_gas_used: 0,
+              gas_used: 0,
+              index: 0
+            ),
+          address_hash: address.hash
+        )
+
       block_number = log.transaction.block_number
       assert {:ok, [^block_number]} = Chain.uncataloged_token_transfer_block_numbers()
+    end
+
+    test "does not include transactions without a block_number" do
+      insert(:token_transfer_log)
+      assert {:ok, []} = Chain.uncataloged_token_transfer_block_numbers()
     end
   end
 
   describe "address_to_balances_by_day/1" do
     test "return a list of balances by day" do
       address = insert(:address)
-      noon = ~D[2018-12-06] |> Timex.to_datetime() |> Timex.set(hour: 12)
+      today = NaiveDateTime.utc_now()
+      noon = Timex.set(today, hour: 12)
       block = insert(:block, timestamp: noon)
-      block_one_day_ago = insert(:block, timestamp: Timex.shift(noon, days: -1))
+      yesterday = Timex.shift(noon, days: -1)
+      block_one_day_ago = insert(:block, timestamp: yesterday)
       insert(:fetched_balance, address_hash: address.hash, value: 1000, block_number: block.number)
       insert(:fetched_balance, address_hash: address.hash, value: 2000, block_number: block_one_day_ago.number)
 
       balances = Chain.address_to_balances_by_day(address.hash)
 
       assert balances == [
-               %{date: "2018-12-05", value: Decimal.new("2E-15")},
-               %{date: "2018-12-06", value: Decimal.new("1E-15")}
+               %{date: yesterday |> NaiveDateTime.to_date() |> Date.to_string(), value: Decimal.new("2E-15")},
+               %{date: today |> NaiveDateTime.to_date() |> Date.to_string(), value: Decimal.new("1E-15")}
              ]
     end
   end
@@ -3401,6 +3613,124 @@ defmodule Explorer.ChainTest do
       {:ok, expected_value} = Wei.cast(3_000_000_000_000_000_000)
 
       assert Chain.block_combined_rewards(block) == expected_value
+    end
+  end
+
+  describe "contract_creation_input_data/1" do
+    test "fetches contract creation input data from contract creation transaction" do
+      address = insert(:address)
+
+      input = %Data{
+        bytes: <<1, 2, 3, 4, 5>>
+      }
+
+      :transaction
+      |> insert(created_contract_address_hash: address.hash, input: input)
+      |> with_block()
+
+      found_creation_data = Chain.contract_creation_input_data(address.hash)
+
+      assert found_creation_data == Data.to_string(input)
+    end
+
+    test "fetches contract creation input data from internal transaction" do
+      created_contract_address = insert(:address)
+
+      transaction =
+        :transaction
+        |> insert()
+        |> with_block()
+
+      input = %Data{
+        bytes: <<1, 2, 3, 4, 5>>
+      }
+
+      insert(
+        :internal_transaction_create,
+        transaction: transaction,
+        index: 0,
+        created_contract_address: created_contract_address,
+        block_number: transaction.block_number,
+        transaction_index: transaction.index,
+        input: input
+      )
+
+      assert Chain.contract_creation_input_data(created_contract_address.hash) == Data.to_string(input)
+    end
+
+    test "can't find address" do
+      hash = %Hash{
+        byte_count: 20,
+        bytes: <<0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0>>
+      }
+
+      found_creation_data = Chain.contract_creation_input_data(hash)
+
+      assert found_creation_data == ""
+    end
+  end
+
+  describe "contract_address?/2" do
+    test "returns true if address has contract code" do
+      code = %Data{
+        bytes: <<1, 2, 3, 4, 5>>
+      }
+
+      address = insert(:address, contract_code: code)
+
+      assert Chain.contract_address?(to_string(address.hash), 1)
+    end
+
+    test "returns false if address has not contract code" do
+      address = insert(:address)
+
+      refute Chain.contract_address?(to_string(address.hash), 1)
+    end
+
+    @tag :no_parity
+    @tag :no_geth
+    test "returns true if fetched code from json rpc", %{
+      json_rpc_named_arguments: json_rpc_named_arguments
+    } do
+      hash = "0x71300d93a8CdF93385Af9635388cF2D00b95a480"
+
+      if json_rpc_named_arguments[:transport] == EthereumJSONRPC.Mox do
+        EthereumJSONRPC.Mox
+        |> expect(:json_rpc, fn _arguments, _options ->
+          {:ok,
+           [
+             %{
+               id: 0,
+               result: "0x0102030405"
+             }
+           ]}
+        end)
+      end
+
+      assert Chain.contract_address?(to_string(hash), 1, json_rpc_named_arguments)
+    end
+
+    @tag :no_parity
+    @tag :no_geth
+    test "returns false if no fetched code from json rpc", %{
+      json_rpc_named_arguments: json_rpc_named_arguments
+    } do
+      hash = "0x71300d93a8CdF93385Af9635388cF2D00b95a480"
+
+      if json_rpc_named_arguments[:transport] == EthereumJSONRPC.Mox do
+        EthereumJSONRPC.Mox
+        |> expect(:json_rpc, fn _arguments, _options ->
+          {:ok,
+           [
+             %{
+               id: 0,
+               result: "0x"
+             }
+           ]}
+        end)
+      end
+
+      refute Chain.contract_address?(to_string(hash), 1, json_rpc_named_arguments)
     end
   end
 end
