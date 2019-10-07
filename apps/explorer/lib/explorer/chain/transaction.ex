@@ -20,6 +20,7 @@ defmodule Explorer.Chain.Transaction do
     Hash,
     InternalTransaction,
     Log,
+    Token,
     TokenTransfer,
     Transaction,
     Wei
@@ -661,5 +662,23 @@ defmodule Explorer.Chain.Transaction do
       order_by: [desc: :block_number],
       limit: 1
     )
+  end
+
+#  @spec get_token_name(Hash.Address.t()) :: {:ok, String.t()} | {:error, :not_found}
+    def get_token_name(%__MODULE__{
+      gas_currency_hash: gas_currency_hash
+    }) do
+    query =
+      from(token in Token,
+        where: token.contract_address_hash == ^gas_currency_hash,
+#        select: {token, %{"name" => token.name, "symbol" => token.symbol}},
+        limit: 1
+      )
+
+      result =
+        query
+        |> Repo.all()
+        |> List.first()
+      result
   end
 end
