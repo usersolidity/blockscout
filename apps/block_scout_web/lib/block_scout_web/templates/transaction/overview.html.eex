@@ -85,22 +85,23 @@
             <dt class="col-sm-3 text-muted"> <%= gettext "TX Fee" %> </dt>
             <dd class="col-sm-9">
               <%= formatted_fee(@transaction, denomination: :ether, include_label: false) %>
-              <%= gas_currency_token_name.name %> (<%= gas_currency_token_name.symbol %>)
-
+              <%= if gas_currency_token_name.name == "" do %>
+                <%= gas_currency_token_name.symbol %>
+              <% else %>
+                <%= gas_currency_token_name.name %> (<%= gas_currency_token_name.symbol %>)
+              <% end %>
             </dd>
           </dl>
           <!-- gasCurrency -->
+          <%= if @transaction.gas_currency_hash do %>
           <dl class="row">
             <dt class="col-sm-3 text-muted"><%= gettext "Gas Currency" %> </dt>
             <dd class="col-sm-9" data-selector="gas-currency">
-              <%= if @transaction.gas_currency_hash do %>
                 <%= link(
                       @transaction.gas_currency_hash,
                       class: "address__link",
                       to: address_path(@conn, :show, @transaction.gas_currency_hash)
                     ) %>
-              <% else %>
-                <%= formatted_status(status) %>
               <% end %>
             </dd>
           </dl>

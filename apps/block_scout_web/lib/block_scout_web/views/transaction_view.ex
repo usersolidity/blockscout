@@ -295,7 +295,11 @@ defmodule BlockScoutWeb.TransactionView do
   end
 
   def get_token_name(transaction) do
-    Transaction.get_token_name(transaction)
+    token = Transaction.get_token_name(transaction)
+    case token do
+      {:ok, address} -> address
+      {:error, :not_found} -> %{name: "", symbol: " #{gettext("Ether")}"}
+    end
   end
 
   @doc """

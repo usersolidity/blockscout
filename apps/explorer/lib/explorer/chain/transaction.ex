@@ -664,10 +664,10 @@ defmodule Explorer.Chain.Transaction do
     )
   end
 
-#  @spec get_token_name(Hash.Address.t()) :: {:ok, String.t()} | {:error, :not_found}
-    def get_token_name(%__MODULE__{
-      gas_currency_hash: gas_currency_hash
-    }) do
+  def get_token_name(%__MODULE__{gas_currency_hash: nil}), do: {:error, :not_found}
+  def get_token_name(%__MODULE__{
+    gas_currency_hash: gas_currency_hash
+  }) do
     query =
       from(token in Token,
         where: token.contract_address_hash == ^gas_currency_hash,
@@ -675,10 +675,11 @@ defmodule Explorer.Chain.Transaction do
         limit: 1
       )
 
-      result =
-        query
-        |> Repo.all()
-        |> List.first()
-      result
+    query
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      address -> {:ok, address}
+    end
   end
 end
