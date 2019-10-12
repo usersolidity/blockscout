@@ -94,17 +94,17 @@
           </dl>
           <!-- gasCurrency -->
           <%= if @transaction.gas_currency_hash do %>
-          <dl class="row">
-            <dt class="col-sm-3 text-muted"><%= gettext "Gas Currency" %> </dt>
-            <dd class="col-sm-9" data-selector="gas-currency">
+            <dl class="row">
+              <dt class="col-sm-3 text-muted"><%= gettext "Gas Currency" %> </dt>
+              <dd class="col-sm-9" data-selector="gas-currency">
                 <%= link(
-                      @transaction.gas_currency_hash,
-                      class: "address__link",
-                      to: address_path(@conn, :show, @transaction.gas_currency_hash)
-                    ) %>
-              <% end %>
-            </dd>
-          </dl>
+                  @transaction.gas_currency_hash,
+                  class: "address__link",
+                  to: address_path(@conn, :show, @transaction.gas_currency_hash)
+                  ) %>
+              </dd>
+            </dl>
+          <% end %>
           <!-- feeRecipient -->
           <dl class="row">
             <dt class="col-sm-3 text-muted"><%= gettext "Fee Recipient" %> </dt>
