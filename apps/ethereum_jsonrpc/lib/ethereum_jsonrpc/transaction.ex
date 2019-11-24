@@ -29,9 +29,8 @@ defmodule EthereumJSONRPC.Transaction do
    * `"gas"` - `t:EthereumJSONRPC.quantity/0` of gas provided by the sender.  This is the max gas that may be used.
      `gas * gasPrice` is the max fee in wei that the sender is willing to pay for the transaction to be executed.
    * `"gasPrice"` - `t:EthereumJSONRPC.quantity/0` of wei to pay per unit of gas used.
-   * `"feeCurrency"` - `t:EthereumJSONRPC.address/0` of token used as currency for transaction gas fee
-   * `"gatewayFeeRecipient"` - `t:EthereumJSONRPC.address/0` of the receiver of the transaction gas fee
-   * `"gatewayFee"` - gateway fee
+   * `"gasCurrency"` - `t:EthereumJSONRPC.address/0` of token used as currency for transaction gas fee
+   * `"gasFeeRecipient"` - `t:EthereumJSONRPC.address/0` of the receiver of the transaction gas fee
    * `"hash"` - `t:EthereumJSONRPC.hash/0` of the transaction
    * `"input"` - `t:EthereumJSONRPC.data/0` sent along with the transaction, such as input to the contract.
    * `"nonce"` - `t:EthereumJSONRPC.quantity/0` of transactions made by the sender prior to this one.
@@ -80,9 +79,8 @@ defmodule EthereumJSONRPC.Transaction do
       ...>     "from" => "0xa1e4380a3b1f749673e270229993ee55f35663b4",
       ...>     "gas" => 21000,
       ...>     "gasPrice" => 50000000000000,
-      ...>     "feeCurrency" => "0x88f24de331525cf6cfd7455eb96a9e4d49b7f292",
-      ...>     "gatewayFeeRecipient" => "0xa1e4380a3b1f749673e270229993ee55f35663b4",
-      ...>     "gatewayFee" => 0,
+      ...>     "gasCurrency" => "0x88f24de331525cf6cfd7455eb96a9e4d49b7f292",
+      ...>     "gasFeeRecipient" => "0xa1e4380a3b1f749673e270229993ee55f35663b4",
       ...>     "hash" => "0x5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef84bfed1be16dfba1b22060",
       ...>     "input" => "0x",
       ...>     "nonce" => 0,
@@ -124,9 +122,8 @@ defmodule EthereumJSONRPC.Transaction do
       ...>     "from" => "0xa1e4380a3b1f749673e270229993ee55f35663b4",
       ...>     "gas" => 21000,
       ...>     "gasPrice" => 50000000000000,
-      ...>     "feeCurrency" => "0x88f24de331525cf6cfd7455eb96a9e4d49b7f292",
-      ...>     "gatewayFeeRecipient" => "0xa1e4380a3b1f749673e270229993ee55f35663b4",
-      ...>     "gatewayFee" => "0x0",
+      ...>     "gasCurrency" => "0x88f24de331525cf6cfd7455eb96a9e4d49b7f292",
+      ...>     "gasFeeRecipient" => "0xa1e4380a3b1f749673e270229993ee55f35663b4",
       ...>     "hash" => "0x5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef84bfed1be16dfba1b22060",
       ...>     "input" => "0x0",
       ...>     "nonce" => 0,
@@ -172,9 +169,8 @@ defmodule EthereumJSONRPC.Transaction do
           "from" => from_address_hash,
           "gas" => gas,
           "gasPrice" => gas_price,
-          "feeCurrency" => gas_currency_hash,
-          "gatewayFeeRecipient" => gas_fee_recipient_hash,
-          "gatewayFee" => _,
+          "gasCurrency" => gas_currency_hash,
+          "gasFeeRecipient" => gas_fee_recipient_hash,
           "hash" => hash,
           "input" => input,
           "nonce" => nonce,
@@ -232,9 +228,8 @@ defmodule EthereumJSONRPC.Transaction do
           "from" => _,
           "gas" => _,
           "gasPrice" => _,
-          "feeCurrency" => _,
-          "gatewayFeeRecipient" => _,
-          "gatewayFee" => _,
+          "gasCurrency" => _,
+          "gasFeeRecipient" => _,
           "hash" => _,
           "input" => _,
           "nonce" => _,
@@ -290,9 +285,8 @@ defmodule EthereumJSONRPC.Transaction do
     ...>     "from" => "0x40aa34fb35ef0804a41c2b4be7d3e3d65c7f6d5c",
     ...>     "gas" => "0xcf08",
     ...>     "gasPrice" => "0x0",
-    ...>     "feeCurrency" => nil,
-    ...>     "gatewayFeeRecipient" => nil,
-    ...>     "gatewayFee" => "0x0",
+    ...>     "gasCurrency" => nil,
+    ...>     "gasFeeRecipient" => nil,
     ...>     "hash" => "0x6b80a90c958fb5791a070929379ed6eb7a33ecdf9f9cafcada2f6803b3f25ec3",
     ...>     "input" => "0x",
     ...>     "nonce" => "0x77",
@@ -316,9 +310,8 @@ defmodule EthereumJSONRPC.Transaction do
       "from" => "0x40aa34fb35ef0804a41c2b4be7d3e3d65c7f6d5c",
       "gas" => 53000,
       "gasPrice" => 0,
-      "feeCurrency" => nil,
-      "gatewayFeeRecipient" => nil,
-      "gatewayFee" => 0,
+      "gasCurrency" => nil,
+      "gasFeeRecipient" => nil,
       "hash" => "0x6b80a90c958fb5791a070929379ed6eb7a33ecdf9f9cafcada2f6803b3f25ec3",
       "input" => "0x",
       "nonce" => 119,
@@ -350,15 +343,14 @@ defmodule EthereumJSONRPC.Transaction do
   #
   # "txType": to avoid FunctionClauseError when indexing Wanchain
   defp entry_to_elixir({key, value})
-       when key in ~w(blockHash condition creates from hash input jsonrpc publicKey raw to txType feeCurrency gatewayFeeRecipient),
+       when key in ~w(blockHash condition creates from hash input jsonrpc publicKey raw to txType gasCurrency gasFeeRecipient),
        do: {key, value}
 
   # specific to Nethermind client
   defp entry_to_elixir({"data", value}),
     do: {"input", value}
 
-  defp entry_to_elixir({key, quantity})
-       when key in ~w(gas gasPrice nonce r s standardV v value gatewayFee) and quantity != nil do
+  defp entry_to_elixir({key, quantity}) when key in ~w(gas gasPrice nonce r s standardV v value) and quantity != nil do
     {key, quantity_to_integer(quantity)}
   end
 
