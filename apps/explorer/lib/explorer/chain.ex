@@ -780,6 +780,8 @@ defmodule Explorer.Chain do
             :smart_contract => :optional,
             :token => :optional,
             :celo_account => :optional,
+            :celo_validator => :optional,
+            :celo_validator_group => :optional,
             :contracts_creation_transaction => :optional
           }
         ],
