@@ -781,6 +781,8 @@ defmodule Explorer.Chain do
             :token => :optional,
             :celo_account => :optional,
             :celo_validator => :optional,
+            [{:celo_validator, :group_address}] => :optional,
+            [{:celo_validator, :signer}] => :optional,
             :celo_validator_group => :optional,
             :contracts_creation_transaction => :optional
           }

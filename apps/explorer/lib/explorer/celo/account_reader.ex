@@ -35,14 +35,16 @@ defmodule Explorer.Celo.AccountReader do
 
   def validator_data(%{address: address}) do
     data = fetch_validator_data(address)
+    IO.inspect(data)
 
     case data["getValidator"] do
-      {:ok, [_, _, affiliation, score]} ->
+      {:ok, [_, _, affiliation, score, signer]} ->
         {:ok,
          %{
            address: address,
            group_address_hash: affiliation,
-           score: score
+           score: score,
+           signer_address_hash: signer
          }}
 
       _ ->
