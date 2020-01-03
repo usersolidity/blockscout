@@ -60,10 +60,6 @@ defmodule EthereumJSONRPC.Encoder do
 
   def decode_result(%{id: id, result: result}, function_selector) do
     types_list = List.wrap(function_selector.returns)
-    if function_selector.function == "getValidatorGroup" do
-      IO.inspect(result)
-      IO.inspect(function_selector)
-    end
 
     tuple_list = [{:tuple, types_list}]
 
@@ -78,7 +74,7 @@ defmodule EthereumJSONRPC.Encoder do
         [tup] -> Tuple.to_list(tup)
         _ -> decoded_data
       end
-
+    
     {id, {:ok, fixed_data}}
   rescue
     MatchError ->
