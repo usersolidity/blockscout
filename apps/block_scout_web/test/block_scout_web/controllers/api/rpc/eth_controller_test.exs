@@ -151,11 +151,12 @@ defmodule BlockScoutWeb.API.RPC.EthControllerTest do
 
     test "paginates logs", %{conn: conn, api_params: api_params} do
       contract_address = insert(:contract_address)
+      block = insert(:block)
 
       transaction =
         :transaction
         |> insert(to_address: contract_address)
-        |> with_block()
+        |> with_block(block)
 
       inserted_records =
         insert_list(2000, :log,

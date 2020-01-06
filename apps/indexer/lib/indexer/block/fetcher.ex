@@ -28,6 +28,7 @@ defmodule Indexer.Block.Fetcher do
     ContractCode,
     InternalTransaction,
     ReplacedTransaction,
+    StakingPools,
     Token,
     TokenBalance,
     TokenInstance,
@@ -151,7 +152,7 @@ defmodule Indexer.Block.Fetcher do
           callback_module: callback_module,
           json_rpc_named_arguments: json_rpc_named_arguments
         } = state,
-        _..last_block = range
+        _.._ = range
       )
       when callback_module != nil do
     with {:blocks,
@@ -385,8 +386,7 @@ defmodule Indexer.Block.Fetcher do
         block_number: block_number,
         hash: hash,
         created_contract_address_hash: %Hash{} = created_contract_address_hash,
-        created_contract_code_indexed_at: nil,
-        internal_transactions_indexed_at: nil
+        created_contract_code_indexed_at: nil
       } ->
         [%{block_number: block_number, hash: hash, created_contract_address_hash: created_contract_address_hash}]
 
@@ -401,30 +401,13 @@ defmodule Indexer.Block.Fetcher do
 
   def async_import_created_contract_codes(_), do: :ok
 
-  def async_import_internal_transactions(%{blocks: blocks}, EthereumJSONRPC.Parity) do
+  def async_import_internal_transactions(%{blocks: blocks}) do
     blocks
-    |> Enum.map(fn %Block{number: block_number} -> %{number: block_number} end)
-    |> InternalTransaction.async_block_fetch(10_000)
-  end
-
-  def async_import_internal_transactions(%{transactions: transactions}, EthereumJSONRPC.Geth) do
-    max_block_number = Chain.fetch_max_block_number()
-
-    transactions
-    |> Enum.flat_map(fn
-      %Transaction{block_number: block_number, index: index, hash: hash, internal_transactions_indexed_at: nil} ->
-        [%{block_number: block_number, index: index, hash: hash}]
-
-      %Transaction{internal_transactions_indexed_at: %DateTime{}} ->
-        []
-    end)
-    |> Enum.filter(fn %{block_number: block_number} ->
-      max_block_number - block_number < @geth_block_limit
-    end)
+    |> Enum.map(fn %Block{number: block_number} -> block_number end)
     |> InternalTransaction.async_fetch(10_000)
   end
 
-  def async_import_internal_transactions(_, _), do: :ok
+  def async_import_internal_transactions(_), do: :ok
 
   def async_import_tokens(%{tokens: tokens}) do
     tokens

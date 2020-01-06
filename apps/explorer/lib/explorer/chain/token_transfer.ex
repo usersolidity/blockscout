@@ -226,7 +226,8 @@ defmodule Explorer.Chain.TokenTransfer do
       from(
         tt in TokenTransfer,
         where: tt.to_address_hash == ^address_hash,
-        select: type(tt.transaction_hash, :binary)
+        select: type(tt.transaction_hash, :binary),
+        distinct: tt.transaction_hash
       )
 
     query
@@ -240,7 +241,8 @@ defmodule Explorer.Chain.TokenTransfer do
       from(
         tt in TokenTransfer,
         where: tt.from_address_hash == ^address_hash,
-        select: type(tt.transaction_hash, :binary)
+        select: type(tt.transaction_hash, :binary),
+        distinct: tt.transaction_hash
       )
 
     query
@@ -260,6 +262,7 @@ defmodule Explorer.Chain.TokenTransfer do
       from(token_transfer in TokenTransfer,
         where: token_transfer.to_address_hash == ^address_bytes or token_transfer.from_address_hash == ^address_bytes,
         select: type(token_transfer.transaction_hash, :binary),
+        distinct: token_transfer.transaction_hash,
         limit: ^page_size
       )
 

@@ -6,7 +6,7 @@ defmodule Explorer.Chain.Log do
   require Logger
 
   alias ABI.{Event, FunctionSelector}
-  alias Explorer.Chain.{Address, Block, ContractMethod, Data, Hash, Transaction}
+  alias Explorer.Chain.{Address, ContractMethod, Data, Hash, Transaction}
   alias Explorer.Repo
 
   @required_attrs ~w(address_hash data index block_number block_hash)a
@@ -14,6 +14,8 @@ defmodule Explorer.Chain.Log do
 
   @typedoc """
    * `address` - address of contract that generate the event
+   * `block_hash` - hash of the block
+   * `block_number` - The block number that the transfer took place.
    * `address_hash` - foreign key for `address`
    * `data` - non-indexed log parameters.
    * `first_topic` - `topics[0]`

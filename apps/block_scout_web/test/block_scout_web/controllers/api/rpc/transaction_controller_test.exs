@@ -256,7 +256,9 @@ defmodule BlockScoutWeb.API.RPC.TransactionControllerTest do
         transaction: transaction,
         index: 0,
         type: :reward,
-        error: error
+        error: error,
+        block_hash: transaction.block_hash,
+        block_index: 0
       ]
 
       insert(:internal_transaction, internal_transaction_details)
@@ -410,10 +412,10 @@ defmodule BlockScoutWeb.API.RPC.TransactionControllerTest do
         insert(:log,
           address: address,
           transaction: transaction,
-          block: block,
-          block_number: 222,
           first_topic: "first topic",
-          second_topic: "second topic"
+          second_topic: "second topic",
+          block: block,
+          block_number: block.number
         )
       end)
 

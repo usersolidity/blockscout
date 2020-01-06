@@ -1,8 +1,6 @@
 defmodule BlockScoutWeb.AddressContractController do
   use BlockScoutWeb, :controller
 
-  require Logger
-
   import BlockScoutWeb.AddressController, only: [transaction_and_validation_count: 1]
 
   alias Explorer.{Chain, Market}
@@ -39,6 +37,7 @@ defmodule BlockScoutWeb.AddressContractController do
           is_proxy: true,
           coin_balance_status: CoinBalanceOnDemand.trigger_fetch(address),
           exchange_rate: Market.get_exchange_rate(Explorer.coin()) || Token.null(),
+          counters_path: address_path(conn, :address_counters, %{"id" => address_hash_string}),
           transaction_count: transaction_count,
           validation_count: validation_count
         )
