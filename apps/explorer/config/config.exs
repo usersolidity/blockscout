@@ -21,11 +21,6 @@ config :explorer,
       do: Explorer.Chain.Events.SimpleSender,
       else: Explorer.Chain.Events.DBSender
     ),
-  realtime_events_sender:
-    if(System.get_env("DISABLE_WEBAPP") != "true",
-      do: Explorer.Chain.Events.SimpleSender,
-      else: Explorer.Chain.Events.DBSender
-    ),
   index_internal_transactions_for_token_transfers:
     if(System.get_env("INTERNAL_TRANSACTIONOS_FOR_TOKEN_TRANSFERS") == "true", do: true, else: false)
 
