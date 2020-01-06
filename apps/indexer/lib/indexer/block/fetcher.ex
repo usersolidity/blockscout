@@ -440,6 +440,10 @@ defmodule Indexer.Block.Fetcher do
 
   def async_import_token_balances(_), do: :ok
 
+  def async_import_staking_pools do
+    StakingPools.async_fetch()
+  end
+
   def async_import_celo_accounts(%{celo_accounts: accounts}) do
     CeloAccount.async_fetch(accounts)
   end
