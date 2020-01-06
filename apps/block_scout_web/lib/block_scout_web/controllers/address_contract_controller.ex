@@ -1,6 +1,7 @@
 defmodule BlockScoutWeb.AddressContractController do
   use BlockScoutWeb, :controller
 
+  require Logger
   import BlockScoutWeb.AddressController, only: [transaction_and_validation_count: 1]
 
   alias Explorer.{Chain, Market}
