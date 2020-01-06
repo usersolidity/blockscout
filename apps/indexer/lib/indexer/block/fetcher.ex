@@ -152,7 +152,7 @@ defmodule Indexer.Block.Fetcher do
           callback_module: callback_module,
           json_rpc_named_arguments: json_rpc_named_arguments
         } = state,
-        _.._ = range
+        _..last_block = range
       )
       when callback_module != nil do
     with {:blocks,
@@ -407,7 +407,24 @@ defmodule Indexer.Block.Fetcher do
     |> InternalTransaction.async_fetch(10_000)
   end
 
-  def async_import_internal_transactions(_), do: :ok
+  def async_import_internal_transactions(%{transactions: transactions}, EthereumJSONRPC.Geth) do
+    max_block_number = Chain.fetch_max_block_number()
+
+    transactions
+    |> Enum.flat_map(fn
+      %Transaction{block_number: block_number, index: index, hash: hash, internal_transactions_indexed_at: nil} ->
+        [%{block_number: block_number, index: index, hash: hash}]
+
+      %Transaction{internal_transactions_indexed_at: %DateTime{}} ->
+        []
+    end)
+    |> Enum.filter(fn %{block_number: block_number} ->
+      max_block_number - block_number < @geth_block_limit
+    end)
+    |> InternalTransaction.async_fetch(10_000)
+  end
+
+  def async_import_internal_transactions(_, _), do: :ok
 
   def async_import_tokens(%{tokens: tokens}) do
     tokens
