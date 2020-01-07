@@ -1747,7 +1747,6 @@ defmodule Explorer.Chain do
   @spec stream_transactions_with_unfetched_created_contract_codes(
           fields :: [
             :block_hash
-            | :internal_transactions_indexed_at
             | :created_contract_code_indexed_at
             | :from_address_hash
             | :gas
@@ -1784,7 +1783,6 @@ defmodule Explorer.Chain do
   @spec stream_mined_transactions(
           fields :: [
             :block_hash
-            | :internal_transactions_indexed_at
             | :created_contract_code_indexed_at
             | :from_address_hash
             | :gas
@@ -1818,7 +1816,6 @@ defmodule Explorer.Chain do
   @spec stream_pending_transactions(
           fields :: [
             :block_hash
-            | :internal_transactions_indexed_at
             | :created_contract_code_indexed_at
             | :from_address_hash
             | :gas

@@ -46,7 +46,6 @@ defmodule Explorer.Chain.Block do
    * `timestamp` - When the block was collated
    * `total_difficulty` - the total `difficulty` of the chain until this block.
    * `transactions` - the `t:Explorer.Chain.Transaction.t/0` in this block.
-   * `internal_transactions_indexed_at` - when `internal_transactions` were fetched by `Indexer`.
   """
   @type t :: %__MODULE__{
           consensus: boolean(),
@@ -63,7 +62,6 @@ defmodule Explorer.Chain.Block do
           timestamp: DateTime.t(),
           total_difficulty: difficulty(),
           transactions: %Ecto.Association.NotLoaded{} | [Transaction.t()],
-          internal_transactions_indexed_at: DateTime.t(),
           refetch_needed: boolean()
         }
 
@@ -78,7 +76,6 @@ defmodule Explorer.Chain.Block do
     field(:size, :integer)
     field(:timestamp, :utc_datetime_usec)
     field(:total_difficulty, :decimal)
-    field(:internal_transactions_indexed_at, :utc_datetime_usec)
     field(:refetch_needed, :boolean)
 
     timestamps()
