@@ -364,7 +364,6 @@ defmodule Explorer.Factory do
 
     %Log{
       address: build(:address),
-      block: block,
       block_number: block.number,
       data: data(:log_data),
       first_topic: nil,
