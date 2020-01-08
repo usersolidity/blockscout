@@ -62,11 +62,11 @@ defmodule Explorer.Chain.Import.Runner.Transactions do
   end
 
   @spec insert(Repo.t(), [map()], %{
-    optional(:on_conflict) => Import.Runner.on_conflict(),
-    required(:timeout) => timeout,
-    required(:timestamps) => Import.timestamps(),
-    required(:token_transfer_transaction_hash_set) => MapSet.t()
-  }) :: {:ok, [Hash.t()]}
+          optional(:on_conflict) => Import.Runner.on_conflict(),
+          required(:timeout) => timeout,
+          required(:timestamps) => Import.timestamps(),
+          required(:token_transfer_transaction_hash_set) => MapSet.t()
+        }) :: {:ok, [Hash.t()]}
   defp insert(
          repo,
          changes_list,
@@ -150,9 +150,9 @@ defmodule Explorer.Chain.Import.Runner.Transactions do
   end
 
   defp discard_blocks_for_recollated_transactions(repo, changes_list, %{
-    timeout: timeout,
-    timestamps: %{updated_at: updated_at}
-  })
+         timeout: timeout,
+         timestamps: %{updated_at: updated_at}
+       })
        when is_list(changes_list) do
     {transactions_hashes, transactions_block_hashes} =
       changes_list
