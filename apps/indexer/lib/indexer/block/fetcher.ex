@@ -184,7 +184,7 @@ defmodule Indexer.Block.Fetcher do
             else
               {:ok, nil}
             end},
-         # TODO: handle non-gold transaction fees
+         # _TODO: handle non-gold transaction fees
          # %{token_transfers: fee_token_transfers, tokens: fee_tokens} =
          # TokenTransfers.parse_fees(transactions_with_receipts),
          fee_tokens = [],
