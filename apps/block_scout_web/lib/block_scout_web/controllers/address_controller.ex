@@ -127,4 +127,5 @@ defmodule BlockScoutWeb.AddressController do
   defp contract?(%{contract_code: nil}), do: false
 
   defp contract?(%{contract_code: _}), do: true
+  defp contract?(_), do: false
 end
