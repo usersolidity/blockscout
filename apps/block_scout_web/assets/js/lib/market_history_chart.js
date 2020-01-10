@@ -37,8 +37,8 @@ const config = {
           drawBorder: false
         },
         ticks: {
-          beginAtZero: true,
-          callback: (value, index, values) => `C$${numeral(value).format('0,0.00')}`,
+          beginAtZero: false,
+          callback: (value, index, values) => `$${numeral(value).format('0,0.000')}`,
           maxTicksLimit: 4,
           fontColor: sassVariables.dashboardBannerChartAxisFontColor
         }
@@ -93,6 +93,7 @@ function getPriceData (marketHistoryData) {
   return data
 }
 
+/*
 function getMarketCapData (marketHistoryData, availableSupply) {
   if (marketHistoryData.length === 0) {
     return getDataFromLocalStorage('marketCapData')
@@ -106,6 +107,7 @@ function getMarketCapData (marketHistoryData, availableSupply) {
   setDataToLocalStorage('marketCapData', data)
   return data
 }
+*/
 
 // colors for light and dark theme
 var priceLineColor
@@ -133,7 +135,7 @@ class MarketHistoryChart {
     this.marketCap = {
       label: window.localized['Market Cap'],
       yAxisID: 'marketCap',
-      data: getMarketCapData(marketHistoryData, availableSupply),
+      data: [], // getMarketCapData(marketHistoryData, availableSupply),
       fill: false,
       pointRadius: 0,
       backgroundColor: mcapLineColor,
@@ -159,9 +161,9 @@ class MarketHistoryChart {
     if (this.availableSupply !== null && typeof this.availableSupply === 'object') {
       const today = new Date().toJSON().slice(0, 10)
       this.availableSupply[today] = availableSupply
-      this.marketCap.data = getMarketCapData(marketHistoryData, this.availableSupply)
+      // this.marketCap.data = getMarketCapData(marketHistoryData, this.availableSupply)
     } else {
-      this.marketCap.data = getMarketCapData(marketHistoryData, availableSupply)
+      // this.marketCap.data = getMarketCapData(marketHistoryData, availableSupply)
     }
     this.chart.update()
   }

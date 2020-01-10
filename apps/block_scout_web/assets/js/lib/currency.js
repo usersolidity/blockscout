@@ -3,7 +3,7 @@ import numeral from 'numeral'
 import { BigNumber } from 'bignumber.js'
 
 export function formatUsdValue (value) {
-  return `${formatCurrencyValue(value)} cUSD`
+  return `${formatCurrencyValue(value)} USD`
 }
 
 export function formatCGValue (value) {
@@ -18,7 +18,7 @@ function formatCurrencyValue (value, symbol) {
   symbol = symbol === undefined ? '$' : symbol
   if (value === 0) return `${symbol}0.000000`
   if (value < 0.000001) return `${window.localized['Less than']} ${symbol}0.000001`
-  if (value < 1) return `${symbol}${numeral(value).format('0.000000')}`
+  if (value < 10) return `${symbol}${numeral(value).format('0.000')}`
   if (value < 100000) return `${symbol}${numeral(value).format('0,0.00')}`
   if (value > 1000000000000) return `${symbol}${numeral(value).format('0.000e+0')}`
   return `${symbol}${numeral(value).format('0,0')}`
