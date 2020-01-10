@@ -28,7 +28,7 @@ defmodule Explorer.Repo.Migrations.CreateLogs do
     end
 
     create(index(:logs, :address_hash))
-#    create(index(:logs, :transaction_hash))
+    #    create(index(:logs, :transaction_hash))
 
     create(index(:logs, :index))
     create(index(:logs, :type))
@@ -36,7 +36,7 @@ defmodule Explorer.Repo.Migrations.CreateLogs do
     create(index(:logs, :second_topic))
     create(index(:logs, :third_topic))
     create(index(:logs, :fourth_topic))
-#    create(index(:logs, [:transaction_hash, :index]))
+    #    create(index(:logs, [:transaction_hash, :index]))
     create(unique_index(:logs, [:block_hash, :index]))
   end
 end

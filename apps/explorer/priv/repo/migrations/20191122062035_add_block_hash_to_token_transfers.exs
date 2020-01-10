@@ -27,13 +27,13 @@ defmodule Explorer.Repo.Migrations.AddBlockHashToTokenTransfers do
     #  modify(:block_hash, references(:blocks, column: :hash, type: :bytea), null: false)
     # end
 
-    #execute("""
-    #ALTER table token_transfers
-    #DROP CONSTRAINT token_transfers_pkey,
-    #ADD PRIMARY KEY (transaction_hash, block_hash, log_index);
-    #""")
+    # execute("""
+    # ALTER table token_transfers
+    # DROP CONSTRAINT token_transfers_pkey,
+    # ADD PRIMARY KEY (transaction_hash, block_hash, log_index);
+    # """)
 
-#    drop(unique_index(:token_transfers, [:transaction_hash, :log_index]))
+    #    drop(unique_index(:token_transfers, [:transaction_hash, :log_index]))
 
     create_if_not_exists(index(:token_transfers, [:transaction_hash, :log_index]))
   end
