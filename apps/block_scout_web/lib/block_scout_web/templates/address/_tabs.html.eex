@@ -27,6 +27,7 @@
       class: "card-tab #{tab_status("logs", @conn.request_path)}",
       to: address_logs_path(@conn, :index, @address.hash)
       ) %>
+<<<<<<< HEAD
   <%= if BlockScoutWeb.AddressView.validator?(@validation_count) do %>
     <%= link(
       gettext("Blocks Signed"),
@@ -35,6 +36,10 @@
       to: address_signed_path(@conn, :index, @address.hash)
     ) %>
   <%= if BlockScoutWeb.AddressView.validator?(@validation_count) do %>
+||||||| e893bca72... at least something is working now
+=======
+  <%= if BlockScoutWeb.AddressView.validator?(@validation_count) do %>
+>>>>>>> parent of e893bca72... at least something is working now
     <%= link(
       gettext("Blocks Validated"),
       class: "card-tab #{tab_status("validations", @conn.request_path)}",
