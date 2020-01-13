@@ -13,7 +13,6 @@ defmodule Explorer.Chain.Events.SubscriberTest do
 
       Subscriber.to(event_type, broadcast_type)
 
-
       Publisher.broadcast([{event_type, event_data}], broadcast_type)
 
       assert_receive {:chain_event, :blocks, :realtime, []}

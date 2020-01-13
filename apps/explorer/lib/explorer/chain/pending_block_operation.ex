@@ -78,5 +78,4 @@ defmodule Explorer.Chain.PendingBlockOperation do
       where: fragment("EXCLUDED.fetch_internal_transactions <> ?", pending_ops.fetch_internal_transactions)
     )
   end
-
 end
