@@ -21,7 +21,7 @@ defmodule BlockScoutWeb.AddressContractController do
 
     with {:ok, address_hash} <- Chain.string_to_address_hash(address_hash_string),
          {:ok, address} <- Chain.find_contract_address(address_hash, address_options, true) do
-      {transaction_count, validation_count} = transaction_and_validation_count(address)
+      {transaction_count, validation_count} = transaction_and_validation_count(address_hash)
 
       Logger.debug("Address Found #{address_hash}")
       Logger.debug("Smart Contract #{address}")
