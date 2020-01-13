@@ -134,15 +134,7 @@ defmodule BlockScoutWeb.AddressChannelTest do
         |> insert(from_address: address)
         |> with_block()
 
-      internal_transaction =
-        insert(
-          :internal_transaction,
-          transaction: transaction,
-          from_address: address,
-          index: 0,
-          block_hash: transaction.block_hash,
-          block_index: 0
-        )
+      internal_transaction = insert(:internal_transaction, transaction: transaction, from_address: address, index: 0)
 
       Notifier.handle_event({:chain_event, :internal_transactions, :realtime, [internal_transaction]})
 
@@ -166,14 +158,7 @@ defmodule BlockScoutWeb.AddressChannelTest do
         |> insert(to_address: address)
         |> with_block()
 
-      internal_transaction =
-        insert(:internal_transaction,
-          transaction: transaction,
-          to_address: address,
-          index: 0,
-          block_hash: transaction.block_hash,
-          block_index: 0
-        )
+      internal_transaction = insert(:internal_transaction, transaction: transaction, to_address: address, index: 0)
 
       Notifier.handle_event({:chain_event, :internal_transactions, :realtime, [internal_transaction]})
 
@@ -201,14 +186,7 @@ defmodule BlockScoutWeb.AddressChannelTest do
         |> with_block()
 
       internal_transaction =
-        insert(:internal_transaction,
-          transaction: transaction,
-          from_address: address,
-          to_address: address,
-          index: 0,
-          block_hash: transaction.block_hash,
-          block_index: 0
-        )
+        insert(:internal_transaction, transaction: transaction, from_address: address, to_address: address, index: 0)
 
       Notifier.handle_event({:chain_event, :internal_transactions, :realtime, [internal_transaction]})
 

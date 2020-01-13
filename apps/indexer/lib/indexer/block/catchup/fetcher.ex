@@ -122,7 +122,7 @@ defmodule Indexer.Block.Catchup.Fetcher do
   @async_import_remaining_block_data_options ~w(address_hash_to_fetched_balance_block_number)a
 
   @impl Block.Fetcher
-  def import(_block_fetcher, options) when is_map(options) do
+  def import(%Block.Fetcher{json_rpc_named_arguments: json_rpc_named_arguments}, options) when is_map(options) do
     {async_import_remaining_block_data_options, options_with_block_rewards_errors} =
       Map.split(options, @async_import_remaining_block_data_options)
 
@@ -135,7 +135,8 @@ defmodule Indexer.Block.Catchup.Fetcher do
     with {:import, {:ok, imported} = ok} <- {:import, Chain.import(full_chain_import_options)} do
       async_import_remaining_block_data(
         imported,
-        Map.put(async_import_remaining_block_data_options, :block_rewards, %{errors: block_reward_errors})
+        Map.put(async_import_remaining_block_data_options, :block_rewards, %{errors: block_reward_errors}),
+        json_rpc_named_arguments
       )
 
       ok
@@ -144,7 +145,8 @@ defmodule Indexer.Block.Catchup.Fetcher do
 
   defp async_import_remaining_block_data(
          imported,
-         %{block_rewards: %{errors: block_reward_errors}} = options
+         %{block_rewards: %{errors: block_reward_errors}} = options,
+         _json_rpc_named_arguments
        ) do
     async_import_block_rewards(block_reward_errors)
     async_import_coin_balances(imported, options)

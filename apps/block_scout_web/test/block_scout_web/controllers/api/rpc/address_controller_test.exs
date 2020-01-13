@@ -1453,13 +1453,7 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
 
       internal_transaction =
         :internal_transaction_create
-        |> insert(
-          transaction: transaction,
-          index: 0,
-          from_address: address,
-          block_hash: transaction.block_hash,
-          block_index: 0
-        )
+        |> insert(transaction: transaction, index: 0, from_address: address)
         |> with_contract_creation(contract_address)
 
       params = %{
@@ -1508,9 +1502,7 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
         transaction: transaction,
         index: 0,
         type: :reward,
-        error: "some error",
-        block_hash: transaction.block_hash,
-        block_index: 0
+        error: "some error"
       ]
 
       insert(:internal_transaction_create, internal_transaction_details)
@@ -1540,12 +1532,7 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
         |> with_block()
 
       for index <- 0..2 do
-        insert(:internal_transaction_create,
-          transaction: transaction,
-          index: index,
-          block_hash: transaction.block_hash,
-          block_index: index
-        )
+        insert(:internal_transaction_create, transaction: transaction, index: index)
       end
 
       params = %{
@@ -1619,13 +1606,7 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
 
       internal_transaction =
         :internal_transaction_create
-        |> insert(
-          transaction: transaction,
-          index: 0,
-          from_address: address,
-          block_hash: transaction.block_hash,
-          block_index: 0
-        )
+        |> insert(transaction: transaction, index: 0, from_address: address)
         |> with_contract_creation(contract_address)
 
       params = %{
@@ -1677,9 +1658,7 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
         transaction: transaction,
         index: 0,
         type: :reward,
-        error: "some error",
-        block_hash: transaction.block_hash,
-        block_index: 0
+        error: "some error"
       ]
 
       insert(:internal_transaction_create, internal_transaction_details)
@@ -1714,9 +1693,7 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
         internal_transaction_details = %{
           from_address: address,
           transaction: transaction,
-          index: index,
-          block_hash: transaction.block_hash,
-          block_index: index
+          index: index
         }
 
         insert(:internal_transaction_create, internal_transaction_details)

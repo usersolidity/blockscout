@@ -44,9 +44,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           from_address: address,
           index: 1,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 1
+          transaction_index: transaction.index
         )
 
       to_internal_transaction =
@@ -55,9 +53,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           to_address: address,
           index: 2,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 2
+          transaction_index: transaction.index
         )
 
       path = address_internal_transaction_path(conn, :index, address, %{"type" => "JSON"})
@@ -87,9 +83,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           from_address: address,
           index: 1,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 1
+          transaction_index: transaction.index
         )
 
       to_internal_transaction =
@@ -98,9 +92,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           to_address: address,
           index: 2,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 2
+          transaction_index: transaction.index
         )
 
       path = address_internal_transaction_path(conn, :index, address, %{"filter" => "from", "type" => "JSON"})
@@ -133,9 +125,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           from_address: address,
           index: 1,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 1
+          transaction_index: transaction.index
         )
 
       to_internal_transaction =
@@ -144,9 +134,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           to_address: address,
           index: 2,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 2
+          transaction_index: transaction.index
         )
 
       path = address_internal_transaction_path(conn, :index, address, %{"filter" => "to", "type" => "JSON"})
@@ -179,9 +167,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           from_address: address,
           index: 1,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 1
+          transaction_index: transaction.index
         )
 
       to_internal_transaction =
@@ -191,9 +177,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           created_contract_address: address,
           index: 2,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: 2
+          transaction_index: transaction.index
         )
 
       path = address_internal_transaction_path(conn, :index, address, %{"filter" => "to", "type" => "JSON"})
@@ -242,9 +226,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
             from_address: address,
             index: index,
             block_number: transaction_1.block_number,
-            transaction_index: transaction_1.index,
-            block_hash: a_block.hash,
-            block_index: index
+            transaction_index: transaction_1.index
           )
         end)
 
@@ -257,9 +239,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
             from_address: address,
             index: index,
             block_number: transaction_2.block_number,
-            transaction_index: transaction_2.index,
-            block_hash: a_block.hash,
-            block_index: 20 + index
+            transaction_index: transaction_2.index
           )
         end)
 
@@ -272,9 +252,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
             from_address: address,
             index: index,
             block_number: transaction_3.block_number,
-            transaction_index: transaction_3.index,
-            block_hash: b_block.hash,
-            block_index: index
+            transaction_index: transaction_3.index
           )
         end)
 
@@ -287,9 +265,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           from_address: address,
           index: 11,
           block_number: transaction_3.block_number,
-          transaction_index: transaction_3.index,
-          block_hash: b_block.hash,
-          block_index: 11
+          transaction_index: transaction_3.index
         )
 
       conn =
@@ -328,9 +304,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           from_address: address,
           index: index,
           block_number: transaction.block_number,
-          transaction_index: transaction.index,
-          block_hash: transaction.block_hash,
-          block_index: index
+          transaction_index: transaction.index
         )
       end)
 
@@ -361,9 +335,7 @@ defmodule BlockScoutWeb.AddressInternalTransactionControllerTest do
           :internal_transaction,
           transaction: transaction,
           from_address: address,
-          index: index,
-          block_hash: transaction.block_hash,
-          block_index: index
+          index: index
         )
       end)
 

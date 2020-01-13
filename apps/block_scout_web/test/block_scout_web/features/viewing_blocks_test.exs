@@ -59,12 +59,7 @@ defmodule BlockScoutWeb.ViewingBlocksTest do
 
       internal_transaction =
         :internal_transaction_create
-        |> insert(
-          transaction: transaction,
-          index: 0,
-          block_hash: transaction.block_hash,
-          block_index: 1
-        )
+        |> insert(transaction: transaction, index: 0)
         |> with_contract_creation(contract_address)
 
       session
