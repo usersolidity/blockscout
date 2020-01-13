@@ -11,16 +11,14 @@ defmodule BlockScoutWeb.AddressViewTest do
     end
 
     test "for a pending internal transaction contract creation to address" do
-      transaction = insert(:transaction, to_address: nil) |> with_block()
+      transaction = insert(:transaction, to_address: nil)
 
       internal_transaction =
         insert(:internal_transaction,
           index: 1,
           transaction: transaction,
           to_address: nil,
-          created_contract_address_hash: nil,
-          block_hash: transaction.block_hash,
-          block_index: 1
+          created_contract_address_hash: nil
         )
 
       assert "Contract Address Pending" == AddressView.address_partial_selector(internal_transaction, :to, nil)

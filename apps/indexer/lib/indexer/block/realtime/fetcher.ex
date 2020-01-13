@@ -184,7 +184,7 @@ defmodule Indexer.Block.Realtime.Fetcher do
 
   @impl Block.Fetcher
   def import(
-        block_fetcher,
+        %Block.Fetcher{json_rpc_named_arguments: json_rpc_named_arguments} = block_fetcher,
         %{
           address_coin_balances: %{params: address_coin_balances_params},
           address_hash_to_fetched_balance_block_number: address_hash_to_block_number,
@@ -210,7 +210,8 @@ defmodule Indexer.Block.Realtime.Fetcher do
          {:import, {:ok, imported} = ok} <- {:import, Chain.import(chain_import_options)} do
       async_import_remaining_block_data(
         imported,
-        %{block_rewards: %{errors: block_reward_errors}}
+        %{block_rewards: %{errors: block_reward_errors}},
+        json_rpc_named_arguments
       )
 
       Accounts.drop(imported[:addresses])
@@ -385,7 +386,8 @@ defmodule Indexer.Block.Realtime.Fetcher do
 
   defp async_import_remaining_block_data(
          imported,
-         %{block_rewards: %{errors: block_reward_errors}}
+         %{block_rewards: %{errors: block_reward_errors}},
+         _json_rpc_named_arguments
        ) do
     async_import_block_rewards(block_reward_errors)
     async_import_created_contract_codes(imported)

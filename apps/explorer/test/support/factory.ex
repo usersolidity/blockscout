@@ -23,7 +23,6 @@ defmodule Explorer.Factory do
     Hash,
     InternalTransaction,
     Log,
-    PendingBlockOperation,
     SmartContract,
     Token,
     TokenTransfer,
@@ -228,9 +227,15 @@ defmodule Explorer.Factory do
 
     cumulative_gas_used = collated_params[:cumulative_gas_used] || Enum.random(21_000..100_000)
     gas_used = collated_params[:gas_used] || Enum.random(21_000..100_000)
+    internal_transactions_indexed_at = collated_params[:internal_transactions_indexed_at]
     status = Keyword.get(collated_params, :status, Enum.random([:ok, :error]))
 
-    error = (status == :error && collated_params[:error]) || nil
+    error =
+      if internal_transactions_indexed_at != nil && status == :error do
+        collated_params[:error] || "Something really bad happened"
+      else
+        nil
+      end
 
     transaction
     |> Transaction.changeset(%{
@@ -244,6 +249,7 @@ defmodule Explorer.Factory do
       #      gas_currency_hash: gas_currency_hash,
       #      gas_fee_recipient_hash: gas_fee_recipient_hash,
       index: next_transaction_index,
+      internal_transactions_indexed_at: internal_transactions_indexed_at,
       status: status
     })
     |> Repo.update!()
@@ -289,14 +295,6 @@ defmodule Explorer.Factory do
     data
   end
 
-  def pending_block_operation_factory do
-    %PendingBlockOperation{
-      # caller MUST supply block
-      # all operations will default to false
-      fetch_internal_transactions: false
-    }
-  end
-
   def internal_transaction_factory() do
     gas = Enum.random(21_000..100_000)
     gas_used = Enum.random(0..gas)
@@ -315,8 +313,6 @@ defmodule Explorer.Factory do
       trace_address: [],
       # caller MUST supply `transaction` because it can't be built lazily to allow overrides without creating an extra
       # transaction
-      # caller MUST supply `block_hash` (usually the same as the transaction's)
-      # caller MUST supply `block_index`
       type: :call,
       value: sequence("internal_transaction_value", &Decimal.new(&1))
     }
@@ -341,8 +337,6 @@ defmodule Explorer.Factory do
       trace_address: [],
       # caller MUST supply `transaction` because it can't be built lazily to allow overrides without creating an extra
       # transaction
-      # caller MUST supply `block_hash` (usually the same as the transaction's)
-      # caller MUST supply `block_index`
       type: :create,
       value: sequence("internal_transaction_value", &Decimal.new(&1))
     }
