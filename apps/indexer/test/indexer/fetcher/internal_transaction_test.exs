@@ -148,7 +148,6 @@ defmodule Indexer.Fetcher.InternalTransactionTest do
     } do
       :transaction
       |> insert()
-      |> with_block(internal_transactions_indexed_at: DateTime.utc_now())
 
       assert InternalTransaction.init(
                [],
@@ -174,7 +173,7 @@ defmodule Indexer.Fetcher.InternalTransactionTest do
     test "does not buffer blocks with fetched internal transactions", %{
       json_rpc_named_arguments: json_rpc_named_arguments
     } do
-      insert(:block, internal_transactions_indexed_at: DateTime.utc_now())
+      insert(:block)
 
       assert InternalTransaction.init(
                [],

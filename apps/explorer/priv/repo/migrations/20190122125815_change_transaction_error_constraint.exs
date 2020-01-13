@@ -16,16 +16,16 @@ defmodule Explorer.Repo.Migrations.ChangeTransactionErrorConstraint do
         # 0 - NULL
         # 1 - NOT NULL
         #
-        # | block_hash | internal_transactions_indexed_at | status | OK | description
+        # | block_hash | status | OK | description
         # |------------|----------------------------------|--------|----|------------
-        # | 0          | 0                                | 0      | 1  | pending
-        # | 0          | 0                                | 1      | 0  | pending with status
-        # | 0          | 1                                | 0      | 0  | pending with internal transactions
-        # | 0          | 1                                | 1      | 0  | pending with internal transactions and status
-        # | 1          | 0                                | 0      | 1  | pre-byzantium collated transaction without internal transactions
-        # | 1          | 0                                | 1      | 1  | post-byzantium collated transaction without internal transactions
-        # | 1          | 1                                | 0      | 0  | pre-byzantium collated transaction with internal transaction without status
-        # | 1          | 1                                | 1      | 1  | pre- or post-byzantium collated transaction with internal transactions and status
+        # | 0          |  0      | 1  | pending
+        # | 0          |  1      | 0  | pending with status
+        # | 0          |  0      | 0  | pending with internal transactions
+        # | 0          |  1      | 0  | pending with internal transactions and status
+        # | 1          |  0      | 1  | pre-byzantium collated transaction without internal transactions
+        # | 1          |  1      | 1  | post-byzantium collated transaction without internal transactions
+        # | 1          |  0      | 0  | pre-byzantium collated transaction with internal transaction without status
+        # | 1          |  1      | 1  | pre- or post-byzantium collated transaction with internal transactions and status
         #
         # [Karnaugh map](https://en.wikipedia.org/wiki/Karnaugh_map)
         # b \ is | 00 | 01 | 11 | 10 |
@@ -35,8 +35,8 @@ defmodule Explorer.Repo.Migrations.ChangeTransactionErrorConstraint do
         #
         # Simplification: ¬i·¬s + b·¬i + b·s
         check: """
-        (internal_transactions_indexed_at IS NULL AND status IS NULL) OR
-        (block_hash IS NOT NULL AND internal_transactions_indexed_at IS NULL) OR
+        (status IS NULL) OR
+        (block_hash IS NOT NULL ) OR
         (block_hash IS NOT NULL AND status IS NOT NULL) OR
         (status = 0 and error = 'dropped/replaced')
         """

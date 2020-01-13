@@ -200,7 +200,7 @@ defmodule BlockScoutWeb.TransactionViewTest do
       transaction =
         :transaction
         |> insert()
-        |> with_block(status: :error, internal_transactions_indexed_at: DateTime.utc_now(), error: "Out of Gas")
+        |> with_block(status: :error, error: "Out of Gas")
 
       status = TransactionView.transaction_status(transaction)
       assert TransactionView.formatted_status(status) == "Error: Out of Gas"

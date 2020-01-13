@@ -77,7 +77,7 @@ Most of them are based off `BufferedTask`, and the basic algorithm goes like thi
 - `replaced_transaction`: not a fetcher per se, but rather an async worker, which discards previously pending transactions after they are replaced with new pending transactions with the same nonce, or are collated in a block.
 - `block_reward`: missing `block_rewards` for consensus blocks
 - `uncle_block`: blocks for `block_second_degree_relations` with null `uncle_fetched_at`
-- `internal_transaction`: for either `blocks` (Parity) or `transactions` with null `internal_transactions_indexed_at`
+- `internal_transaction`: for either `blocks` (Parity) or `transactions`
 - `coin_balance`: for `address_coin_balances` with null `value_fetched_at`
 - `token_balance`: for `address_token_balances` with null `value_fetched_at`. Also upserts `address_current_token_balances`
 - `token`: for `tokens` with `cataloged == false`

@@ -649,7 +649,7 @@ defmodule Explorer.Chain.ImportTest do
         }
       }
 
-      refute Enum.any?(options[:transactions][:params], &Map.has_key?(&1, :internal_transactions_indexed_at))
+      # refute Enum.any?(options[:transactions][:params], &Map.has_key?(&1, :internal_transactions_indexed_at))
 
       assert {:ok, _} = Import.all(options)
 
@@ -1758,7 +1758,6 @@ defmodule Explorer.Chain.ImportTest do
                        block_hash: block_hash_before,
                        block_number: block_number,
                        error: error,
-                       internal_transactions_indexed_at: Timex.parse!("2019-01-01T01:00:00Z", "{ISO:Extended:Z}"),
                        from_address_hash: from_address_hash_before,
                        to_address_hash: to_address_hash_before,
                        gas: 21_000,

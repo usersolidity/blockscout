@@ -1058,7 +1058,7 @@ defmodule Explorer.ChainTest do
 
       :transaction
       |> insert()
-      |> with_block(block, internal_transactions_indexed_at: DateTime.utc_now())
+      |> with_block(block)
 
       assert Chain.finished_indexing?()
     end
@@ -1755,9 +1755,7 @@ defmodule Explorer.ChainTest do
                       bytes:
                         <<83, 189, 136, 72, 114, 222, 62, 72, 134, 146, 136, 27, 174, 236, 38, 46, 123, 149, 35, 77, 57,
                           101, 36, 140, 57, 254, 153, 47, 255, 212, 51, 229>>
-                    },
-                    # because there are successful, non-contract-creation token transfer
-                    internal_transactions_indexed_at: %DateTime{}
+                    }
                   }
                 ],
                 tokens: [
