@@ -7,17 +7,21 @@ defmodule Explorer.Chain.PendingBlockOperation do
 
   alias Explorer.Chain.{Block, Hash}
 
-  @required_attrs ~w(block_hash)a
+  @required_attrs ~w(block_hash fetch_internal_transactions)a
 
   @typedoc """
    * `block_hash` - the hash of the block that has pending operations.
+   * `fetch_internal_transactions` - if the block needs its internal transactions fetched (or not)
   """
   @type t :: %__MODULE__{
-          block_hash: Hash.Full.t()
+          block_hash: Hash.Full.t(),
+          fetch_internal_transactions: boolean()
         }
 
   @primary_key false
   schema "pending_block_operations" do
+    field(:fetch_internal_transactions, :boolean)
+
     timestamps()
 
     belongs_to(:block, Block, foreign_key: :block_hash, primary_key: true, references: :hash, type: Hash.Full)
@@ -43,6 +47,8 @@ defmodule Explorer.Chain.PendingBlockOperation do
       lock: "FOR UPDATE"
     )
   end
+
+  def block_hashes(filter \\ nil)
 
   def block_hashes(filter) when is_nil(filter) do
     from(
