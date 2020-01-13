@@ -54,20 +54,20 @@ defmodule Explorer.Repo.Migrations.ChangeTransactionErrorConstraint do
       constraint(
         :transactions,
         :error,
-        # | status | internal_transactions_indexed_at | error    | OK         | description
-        # |--------|----------------------------------|----------|------------|------------
-        # | NULL   | NULL                             | NULL     | TRUE       | pending or pre-byzantium collated
-        # | NULL   | NULL                             | NOT NULL | FALSE      | error cannot be known before internal transactions are indexed
-        # | NULL   | NOT NULL                         | NULL     | DON'T CARE | handled by `status` check
-        # | NULL   | NOT NULL                         | NOT NULL | FALSE      | error cannot be set unless status is known to be error (`0`)
-        # | 0      | NULL                             | NULL     | TRUE       | post-byzantium before internal transactions indexed
-        # | 0      | NULL                             | NOT NULL | FALSE      | error cannot be set unless internal transactions are indexed
-        # | 0      | NOT NULL                         | NULL     | FALSE      | error MUST be set when status is error
-        # | 0      | NOT NULL                         | NOT NULL | TRUE       | error is set when status is error
-        # | 1      | NULL                             | NULL     | TRUE       | post-byzantium before internal transactions indexed
-        # | 1      | NULL                             | NOT NULL | FALSE      | error cannot be set when status is ok
-        # | 1      | NOT NULL                         | NULL     | TRUE       | error is not set when status is ok
-        # | 1      | NOT NULL                         | NOT NULL | FALSE      | error cannot be set when status is ok
+        # | status | error    | OK         | description
+        # |--------|----------|------------|------------
+        # | NULL   | NULL     | TRUE       | pending or pre-byzantium collated
+        # | NULL   | NOT NULL | FALSE      | error cannot be known before internal transactions are indexed
+        # | NULL   | NULL     | DON'T CARE | handled by `status` check
+        # | NULL   | NOT NULL | FALSE      | error cannot be set unless status is known to be error (`0`)
+        # | 0      | NULL     | TRUE       | post-byzantium before internal transactions indexed
+        # | 0      | NOT NULL | FALSE      | error cannot be set unless internal transactions are indexed
+        # | 0      | NULL     | FALSE      | error MUST be set when status is error
+        # | 0      | NOT NULL | TRUE       | error is set when status is error
+        # | 1      | NULL     | TRUE       | post-byzantium before internal transactions indexed
+        # | 1      | NOT NULL | FALSE      | error cannot be set when status is ok
+        # | 1      | NULL     | TRUE       | error is not set when status is ok
+        # | 1      | NOT NULL | FALSE      | error cannot be set when status is ok
         #
         # Karnaugh map
         # s \ ie | NULL, NULL | NULL, NOT NULL | NOT NULL, NOT NULL | NOT NULL, NULL |
@@ -77,9 +77,9 @@ defmodule Explorer.Repo.Migrations.ChangeTransactionErrorConstraint do
         # 1      | TRUE       | FALSE          | FALSE              | TRUE           |
         #
         check: """
-        (internal_transactions_indexed_at IS NULL AND error IS NULL) OR
-        (status = 0 AND internal_transactions_indexed_at IS NOT NULL AND error IS NOT NULL) OR
-        (status != 0 AND internal_transactions_indexed_at IS NOT NULL AND error IS NULL) OR
+        (error IS NULL) OR
+        (status = 0 AND error IS NOT NULL) OR
+        (status != 0 AND error IS NULL) OR
         (status = 0 and error = 'dropped/replaced')
         """
       )

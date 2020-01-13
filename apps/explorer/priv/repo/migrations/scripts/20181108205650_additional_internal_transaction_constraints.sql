@@ -39,7 +39,7 @@ BEGIN
     RAISE NOTICE '-> transactions with deprecated internal transactions % to % to be updated', iterator, next_iterator - 1;
 
     UPDATE transactions
-    SET internal_transactions_indexed_at = NULL,
+    -- SET internal_transactions_indexed_at = NULL,
         error = NULL
     FROM transactions_with_deprecated_internal_transactions
     WHERE transactions.hash = transactions_with_deprecated_internal_transactions.hash AND

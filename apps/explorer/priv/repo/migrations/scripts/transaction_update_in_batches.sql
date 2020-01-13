@@ -28,7 +28,7 @@ BEGIN
     WITH updated_transactions AS (
       UPDATE transactions
       SET
-        internal_transactions_indexed_at = null,
+        -- internal_transactions_indexed_at = null,
         error = null
       FROM transactions_error_itx_indexed_at_temp
       WHERE transactions.hash = transactions_error_itx_indexed_at_temp.hash

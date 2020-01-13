@@ -18,11 +18,11 @@ defmodule Explorer.Repo.Migrations.AddPendingInternalTxsOperation do
     """)
 
     alter table(:blocks) do
-      remove(:internal_transactions_indexed_at)
+      remove_if_exists(:internal_transactions_indexed_at, :utc_datetime_usec)
     end
 
     alter table(:transactions) do
-      remove(:internal_transactions_indexed_at)
+      remove_if_exists(:internal_transactions_indexed_at, :utc_datetime_usec)
     end
 
     alter table(:internal_transactions) do

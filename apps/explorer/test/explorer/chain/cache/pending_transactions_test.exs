@@ -9,7 +9,6 @@ defmodule Explorer.Chain.Cache.PendingTransactionsTest do
 
       PendingTransactions.update([transaction])
 
-      transaction_hash = transaction.hash
       assert [%{hash: pending_transaction_hash}] = PendingTransactions.all()
 
       assert [%{hash: transaction_hash}] = PendingTransactions.all()
