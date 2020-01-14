@@ -96,6 +96,7 @@ defmodule Explorer.Chain.Block do
     has_many(:transaction_forks, Transaction.Fork, foreign_key: :uncle_hash)
 
     has_many(:rewards, Reward, foreign_key: :block_hash)
+
     has_one(:pending_operations, PendingBlockOperation, foreign_key: :block_hash)
 
     has_one(:celo_delegator, CeloSigners, foreign_key: :signer, references: :miner_hash)
