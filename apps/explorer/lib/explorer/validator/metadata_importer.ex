@@ -14,6 +14,6 @@ defmodule Explorer.Validator.MetadataImporter do
     Repo.transaction(fn -> Enum.each(ordered_metadata_maps, &upsert_validator_metadata(&1)) end)
   end
 
-  defp upsert_validator_metadata(validator_changeset) do
+  defp upsert_validator_metadata(_validator_changeset) do
   end
 end
