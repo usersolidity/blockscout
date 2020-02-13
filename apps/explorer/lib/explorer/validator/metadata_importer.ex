@@ -2,7 +2,6 @@ defmodule Explorer.Validator.MetadataImporter do
   @moduledoc """
   module that upserts validator metadata from a list of maps
   """
-  alias Explorer.Chain.Address
   alias Explorer.Repo
 
   import Ecto.Query, only: [from: 2]
