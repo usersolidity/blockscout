@@ -43,7 +43,7 @@ defmodule Explorer.Chain.CeloValidator do
     field(:url, :string, virtual: true)
     field(:nonvoting_locked_gold, Wei, virtual: true)
     field(:locked_gold, Wei, virtual: true)
-    field(:usd, Wei, virtual: true)
+    field(:usd, :decimal, virtual: true)
     field(:attestations_requested, :integer, virtual: true)
     field(:attestations_fulfilled, :integer, virtual: true)
 
@@ -82,6 +82,13 @@ defmodule Explorer.Chain.CeloValidator do
       :celo_account,
       CeloAccount,
       foreign_key: :address,
+      references: :address
+    )
+
+    has_many(
+      :token_balance,
+      Address.CurrentTokenBalance,
+      foreign_key: :address_hash,
       references: :address
     )
 

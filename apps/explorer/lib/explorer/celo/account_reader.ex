@@ -261,7 +261,8 @@ defmodule Explorer.Celo.AccountReader do
          {:ok, [min_validators, max_validators]} <- data["getElectableValidators"],
          {:ok, [total_gold]} <- data["getTotalLockedGold"],
          {:ok, [epoch_size]} <- data["getEpochSize"],
-         {:ok, [validators]} <- data["getCurrentValidatorSigners"] do
+         {:ok, [validators]} <- data["getCurrentValidatorSigners"],
+         {:ok, usd_address} <- get_address("StableToken") do
       list =
         validators
         |> Enum.with_index()
@@ -272,7 +273,8 @@ defmodule Explorer.Celo.AccountReader do
         %{name: "totalLockedGold", number_value: total_gold},
         %{name: "maxElectableValidators", number_value: max_validators},
         %{name: "minElectableValidators", number_value: min_validators},
-        %{name: "epochSize", number_value: epoch_size}
+        %{name: "epochSize", number_value: epoch_size},
+        %{name: "cUSD", address_value: usd_address}
       ]
 
       {:ok, %{validators: list, params: params}}

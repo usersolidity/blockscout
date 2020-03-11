@@ -32,10 +32,4 @@ defmodule BlockScoutWeb.Resolvers.CeloValidator do
     |> Connection.from_query(&Repo.all/1, args, [])
   end
 
-  def get_usd(%CeloAccount{address: hash}, _, _) do
-    case Chain.get_token_balance(hash, "cUSD") do
-      {:error, :not_found} -> {:ok, %{value: Decimal.new(0)}}
-      {:ok, _} = result -> result
-    end
-  end
 end

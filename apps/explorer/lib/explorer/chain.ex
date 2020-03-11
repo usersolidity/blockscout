@@ -3883,25 +3883,27 @@ defmodule Explorer.Chain do
 
   defp staking_pool_filter(query, _), do: query
 
-  @spec get_celo_account(Hash.Address.t()) :: {:ok, CeloAccount.t()} | {:error, :not_found}
-  def get_celo_account(address_hash) do
-    query =
-      from(account in CeloAccount,
-        where: account.address == ^address_hash
-      )
-
-    query
-    |> Repo.one()
-    |> case do
-      nil -> {:error, :not_found}
-      data -> {:ok, data}
-    end
+  def celo_account_query do
+    from(
+      v in CeloAccount,
+      left_join: balances in assoc(v, :token_balance),
+      join: names in CeloParams,
+      where: names.name == "cUSD",
+      where: names.address_value == balances.token_contract_address_hash,
+      select_merge: %{
+        usd_balance: balances.value
+      }
+    )
   end
 
   def celo_validator_query do
     from(
       v in CeloValidator,
       left_join: t in assoc(v, :status),
+      left_join: balances in assoc(v, :token_balance),
+      join: names in CeloParams,
+      where: names.name == "cUSD",
+      where: names.address_value == balances.token_contract_address_hash,
       inner_join: a in assoc(v, :celo_account),
       inner_join: stat in assoc(v, :celo_attestation_stats),
       select_merge: %{
@@ -3913,7 +3915,7 @@ defmodule Explorer.Chain do
         nonvoting_locked_gold: a.nonvoting_locked_gold,
         attestations_requested: stat.requested,
         attestations_fulfilled: stat.fulfilled,
-        usd: a.usd
+        usd: balances.value
       }
     )
   end
@@ -3932,18 +3934,33 @@ defmodule Explorer.Chain do
       inner_join: total_locked_gold in CeloParams,
       where: total_locked_gold.name == "totalLockedGold",
       inner_join: denom in subquery(denominator),
+      left_join: balances in assoc(g, :token_balance),
+      join: names in CeloParams,
+      where: names.name == "cUSD",
+      where: names.address_value == balances.token_contract_address_hash,
       select_merge: %{
         name: a.name,
         url: a.url,
         locked_gold: a.locked_gold,
         nonvoting_locked_gold: a.nonvoting_locked_gold,
-        usd: a.usd,
+        usd: balances.value,
         accumulated_active: b.active,
         accumulated_rewards: b.reward,
         rewards_ratio: b.ratio,
         receivable_votes: (g.num_members + 1) * total_locked_gold.number_value / denom.value
       }
     )
+  end
+
+  @spec get_celo_account(Hash.Address.t()) :: {:ok, CeloAccount.t()} | {:error, :not_found}
+  def get_celo_account(address_hash) do
+    celo_account_query()
+    |> where([account], account.address == ^address_hash)
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      data -> {:ok, data}
+    end
   end
 
   @spec get_celo_validator(Hash.Address.t()) :: {:ok, CeloValidator.t()} | {:error, :not_found}

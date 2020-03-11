@@ -76,7 +76,7 @@ defmodule BlockScoutWeb.Schema.Types do
     field(:nonvoting_locked_gold, :wei)
     field(:locked_gold, :wei)
 
-    field(:usd, :wei)
+    field(:usd_balance, :decimal)
 
     field(:attestations_requested, :integer)
     field(:attestations_fulfilled, :integer)
@@ -110,7 +110,7 @@ defmodule BlockScoutWeb.Schema.Types do
 
     field(:nonvoting_locked_gold, :wei)
     field(:locked_gold, :wei)
-    field(:usd, :wei)
+    field(:usd, :decimal)
     field(:name, :string)
     field(:url, :string)
 
@@ -141,7 +141,7 @@ defmodule BlockScoutWeb.Schema.Types do
 
     field(:nonvoting_locked_gold, :wei)
     field(:locked_gold, :wei)
-    field(:usd, :wei)
+    field(:usd, :decimal)
     field(:name, :string)
     field(:url, :string)
 

@@ -166,6 +166,7 @@ defmodule Explorer.Chain.CeloAccount do
     field(:nonvoting_locked_gold, Wei)
     field(:locked_gold, Wei)
     field(:usd, Wei)
+    field(:usd_balance, :decimal, virtual: true)
 
     field(:attestations_requested, :integer)
     field(:attestations_fulfilled, :integer)
@@ -176,6 +177,13 @@ defmodule Explorer.Chain.CeloAccount do
       foreign_key: :address,
       references: :hash,
       type: Hash.Address
+    )
+
+    has_many(
+      :token_balance,
+      Address.CurrentTokenBalance,
+      foreign_key: :address_hash,
+      references: :address
     )
 
     timestamps(null: false, type: :utc_datetime_usec)
