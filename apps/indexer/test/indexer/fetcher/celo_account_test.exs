@@ -39,7 +39,7 @@ defmodule Indexer.Fetcher.CeloAccountsTest do
                 locked_gold: locked_gold,
                 nonvoting_locked_gold: nonvoting_locked_gold,
                 url: nil
-              }} = Explorer.Chain.get_celo_account(address)
+              }} = Explorer.Chain.get_celo_account_simple(address)
 
       assert locked_gold.value == Decimal.new(10_001_000_000_000_000_000_000)
       assert nonvoting_locked_gold.value == Decimal.new(1_000_000_000_000_000_000)

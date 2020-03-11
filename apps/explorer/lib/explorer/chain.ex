@@ -3963,6 +3963,17 @@ defmodule Explorer.Chain do
     end
   end
 
+  @spec get_celo_account_simple(Hash.Address.t()) :: {:ok, CeloAccount.t()} | {:error, :not_found}
+  def get_celo_account_simple(address_hash) do
+    CeloAccount
+    |> where([account], account.address == ^address_hash)
+    |> Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      data -> {:ok, data}
+    end
+  end
+
   @spec get_celo_validator(Hash.Address.t()) :: {:ok, CeloValidator.t()} | {:error, :not_found}
   def get_celo_validator(address_hash) do
     celo_validator_query()
