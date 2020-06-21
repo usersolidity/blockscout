@@ -32,7 +32,7 @@ defmodule BlockScoutWeb.Schema do
 
   import_types(BlockScoutWeb.Schema.Types)
 
-  @complexity_multiplier 5
+  @complexity_multiplier 1
 
   node interface do
     resolve_type(fn
