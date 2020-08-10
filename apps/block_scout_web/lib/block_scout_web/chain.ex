@@ -220,10 +220,10 @@ defmodule BlockScoutWeb.Chain do
 
   defp paging_params(%Log{index: index, block_number: block_number} = _log) do
     %{"index" => index, "block_number" => block_number}
-#    if log.transaction != nil and Ecto.assoc_loaded?(log.transaction) do
-#      %{"block_number" => block_number, "transaction_index" => log.transaction.index, "index" => index}
-#    else
-#    end
+    #    if log.transaction != nil and Ecto.assoc_loaded?(log.transaction) do
+    #      %{"block_number" => block_number, "transaction_index" => log.transaction.index, "index" => index}
+    #    else
+    #    end
   end
 
   defp paging_params(%Transaction{block_number: nil, inserted_at: inserted_at, hash: hash}) do
