@@ -4,6 +4,7 @@ defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
   @access_key Application.fetch_env!(:walletapi, :exchange_rates_access_key)
   #behavior added to mock query_exchange_rate() for testing.
   @behaviour WalletAPI.Resolver.CurrencyConversion.ExchangeRateBehaviour
+  require Logger
 
   def get_exchange_rate_behaviour, do: Application.get_env(:walletapi, :exchange_rate_behaviour)
 
@@ -66,8 +67,15 @@ defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
     case HTTPoison.get(@api_url<>path<>req_body) do
       {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
         response = Poison.decode!(body)
-        ConCache.put(:exchange_rate_cache,source_currency_code<>"-"<>date, response)
-        response
+        cond do
+          Map.get(response, "success") == false ->
+            IO.inspect(response, label: "Failed to fetch Exhange Rates")
+            Logger.error(fn -> "Failed to fetch Exchange Rates: #{inspect(response)}" end)
+            {:error, :not_found }
+          true ->
+            ConCache.put(:exchange_rate_cache,source_currency_code<>"-"<>date, response)
+            response
+        end
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, :not_found }
     end

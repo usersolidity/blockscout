@@ -30,7 +30,7 @@ config :walletapi,
   exchange_rate_behaviour: WalletApi.CurrencyConversion.ExchangeRateAPI
 
 config :ethereumex,
-  url: "https://alfajores-forno.celo-testnet.org"
+  url: "https://forno.celo.org/"
 
 # Do not print debug messages in production
 config :logger, level: :info
