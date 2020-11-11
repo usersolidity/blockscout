@@ -1,4 +1,7 @@
 defmodule WalletAPI.Resolver.TransactionResolver.RawTransaction do
+  @moduledoc """
+    Return the transaction data for the address provided
+  """
   alias Explorer.Chain.Wei
   def get_transaction, do: Application.get_env(:walletapi, :get_transaction)
   #   alias WalletAPI.Resolver.TransactionResolver.GetTransaction

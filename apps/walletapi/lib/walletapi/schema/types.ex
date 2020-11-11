@@ -1,4 +1,7 @@
 defmodule WalletApi.Schema.Types do
+  @moduledoc """
+    GraphQL Types
+  """
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 

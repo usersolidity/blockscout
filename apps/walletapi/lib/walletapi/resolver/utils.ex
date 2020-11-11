@@ -1,4 +1,10 @@
 defmodule WalletApi.Utils do
+  @moduledoc """
+    1. Utils module for getting comments from input
+    2. Gets the attestation and escrow contract address from registry
+  """
+  alias ABI.TypeDecoder
+  alias Ethereumex.HttpClient
   @registry_address Application.fetch_env!(:walletapi, :registry_contract_address)
   def format_comment_string(function_call_hex) do
     # '0xe1d6aceb' is the function selector for the transfer with comment function
@@ -11,7 +17,7 @@ defmodule WalletApi.Utils do
         [_, _, comment] =
           data
           |> Base.decode16!(case: :lower)
-          |> ABI.TypeDecoder.decode(%ABI.FunctionSelector{
+          |> TypeDecoder.decode(%ABI.FunctionSelector{
             types: [
               :address,
               {:uint, 256},
@@ -28,23 +34,12 @@ defmodule WalletApi.Utils do
     end
   end
 
-  def get_contract_address(contract) do
-    address_from_cache = ConCache.get(:contract_address_cache, contract)
-
-    cond do
-      address_from_cache == nil ->
-        get_address_from_registry(contract)
-
-      true ->
-        address_from_cache
-    end
-  end
-
   defp get_address_from_registry(contract) do
-    abi_encoded_data = ABI.encode("getAddressForString(string)", [contract]) |> Base.encode16(case: :lower)
+    abi_data = ABI.encode("getAddressForString(string)", [contract])
+    abi_encoded_data = abi_data |> Base.encode16(case: :lower)
 
     {:ok, balance_bytes} =
-      Ethereumex.HttpClient.eth_call(%{
+      HttpClient.eth_call(%{
         data: "0x" <> abi_encoded_data,
         to: @registry_address
       })
@@ -53,5 +48,15 @@ defmodule WalletApi.Utils do
     address = "0x" <> (balance_bytes |> String.slice((String.length(balance_bytes) - 40)..-1))
     ConCache.put(:contract_address_cache, contract, address)
     address
+  end
+
+  def get_contract_address(contract) do
+    address_from_cache = ConCache.get(:contract_address_cache, contract)
+
+    if address_from_cache == nil do
+      get_address_from_registry(contract)
+    else
+      address_from_cache
+    end
   end
 end

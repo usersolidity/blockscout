@@ -1,6 +1,8 @@
 defmodule WalletApi.CurrencyConversion.CurrencyConversionAPI do
-  alias WalletApi.CurrencyConversion.ExchangeRateAPI
-  alias WalletApi.CurrencyConversion.GoldExchangeRateAPI
+  @moduledoc """
+   get exchange rate for transactions
+  """
+  alias WalletApi.CurrencyConversion.{ExchangeRateAPI, GoldExchangeRateAPI}
 
   def get_exchange_rate(_, args, _) do
     from_code = Map.get(args, :source_currency_code, "USD")
@@ -34,6 +36,7 @@ defmodule WalletApi.CurrencyConversion.CurrencyConversionAPI do
             cond do
               status == :exit -> nil
               status == :ok -> res
+              true -> nil
             end
           end
         end)
@@ -60,33 +63,7 @@ defmodule WalletApi.CurrencyConversion.CurrencyConversionAPI do
         []
 
       from_code === "cGLD" || to_code === "cGLD" ->
-        cond do
-          # cGLD -> X (where X !== cUSD)
-          from_code === "cGLD" && to_code !== "cUSD" ->
-            [
-              "cGLD",
-              "cUSD"
-              | if(to_code !== "USD") do
-                  ["USD", to_code]
-                else
-                  [to_code]
-                end
-            ]
-
-          # X -> cGLD (where X !== cUSD)
-          from_code !== "cUSD" && to_code === "cGLD" ->
-            [
-              from_code
-              | if(from_code !== "USD") do
-                  ["USD", "cUSD", "cGLD"]
-                else
-                  ["cUSD", "cGLD"]
-                end
-            ]
-
-          true ->
-            [from_code, to_code]
-        end
+        get_gold_related_steps(from_code, to_code)
 
       # cUSD -> X (where X !== USD)
       from_code === "cUSD" && to_code !== "USD" ->
@@ -95,6 +72,36 @@ defmodule WalletApi.CurrencyConversion.CurrencyConversionAPI do
       # X -> cUSD (where X !== USD)
       from_code !== "USD" && to_code === "cUSD" ->
         [from_code, "USD", "cUSD"]
+
+      true ->
+        [from_code, to_code]
+    end
+  end
+
+  defp get_gold_related_steps(from_code, to_code) do
+    cond do
+      # cGLD -> X (where X !== cUSD)
+      from_code === "cGLD" && to_code !== "cUSD" ->
+        [
+          "cGLD",
+          "cUSD"
+          | if(to_code !== "USD") do
+              ["USD", to_code]
+            else
+              [to_code]
+            end
+        ]
+
+      # X -> cGLD (where X !== cUSD)
+      from_code !== "cUSD" && to_code === "cGLD" ->
+        [
+          from_code
+          | if(from_code !== "USD") do
+              ["USD", "cUSD", "cGLD"]
+            else
+              ["cUSD", "cGLD"]
+            end
+        ]
 
       true ->
         [from_code, to_code]

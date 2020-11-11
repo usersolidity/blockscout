@@ -1,10 +1,18 @@
 defmodule WalletAPI.Resolver.TransactionResolver.GetTransactionBehavior do
+  @moduledoc """
+    Behavior required for mocking data for testing
+    Acts like an interface and requires get_transaction_data() function to be implemented
+    by all modules importing this behavior
+  """
   @callback get_transaction_data(args :: map()) :: list()
 end
 
 defmodule WalletAPI.Resolver.TransactionResolver.GetTransaction do
-  alias Explorer.{GraphQL, Repo}
+  @moduledoc """
+    convert transaction history from POSTGRES Database
+  """
   alias Absinthe.Relay.Connection
+  alias Explorer.{GraphQL, Repo}
   @behaviour WalletAPI.Resolver.TransactionResolver.GetTransactionBehavior
 
   defp options(%{before: _}), do: []
@@ -24,10 +32,11 @@ defmodule WalletAPI.Resolver.TransactionResolver.GetTransaction do
 
   defp get_celo_tx_transfer(args, node) do
     args = Map.put(args, :first, 10)
+    connection_args = Map.take(args, [:after, :before, :first, :last])
 
     node[:node][:transaction_hash]
     |> GraphQL.celo_tx_transfers_query_by_txhash()
-    |> Connection.from_query(&Repo.all/1, args)
+    |> Connection.from_query(&Repo.all/1, connection_args, options(args))
   end
 
   def get_transaction_data(args) do

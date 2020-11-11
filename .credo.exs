@@ -26,7 +26,8 @@
           ~r"/_build/",
           ~r"/deps/",
           ~r"/node_modules/",
-          ~r"/apps/block_scout_web/lib/block_scout_web.ex"
+          ~r"/apps/block_scout_web/lib/block_scout_web.ex",
+          ~r"/apps/walletapi/lib/walletapi.ex"
         ]
       },
       #

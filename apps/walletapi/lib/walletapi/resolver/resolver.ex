@@ -1,7 +1,10 @@
 defmodule WalletApi.Resolver do
+  @moduledoc """
+    Resolver for GraphQL
+  """
   alias ABI
   alias DateTime
-  alias WalletAPI.Resolver.TransactionResolver.{RawTransaction, TokenTransaction, ExchangeTransaction}
+  alias WalletAPI.Resolver.TransactionResolver.{ExchangeTransaction, RawTransaction, TokenTransaction}
 
   def get_token_transactions(_, args, _) do
     {:ok, raw_transfer_txs} = RawTransaction.get_raw_token_transactions(args)
@@ -34,13 +37,13 @@ defmodule WalletApi.Resolver do
         end
       end)
 
-    events =
+    sorted_event =
       events
       |> Enum.filter(fn event -> event[:amount][:currency_code] == token end)
       |> Enum.sort_by(&Map.fetch(&1, :timestamp), &>=/2)
 
     nodes =
-      Enum.map(events, fn event ->
+      Enum.map(sorted_event, fn event ->
         %{:node => event, :cursor => "TODO"}
       end)
 

@@ -1,9 +1,11 @@
 defmodule WalletApi.Schema do
-  @moduledoc false
+  @moduledoc """
+    Schema for GraphQL
+  """
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
-  alias WalletApi.Resolver
   alias WalletApi.CurrencyConversion.CurrencyConversionAPI
+  alias WalletApi.Resolver
   import_types(WalletApi.Schema.Types)
 
   query do

@@ -1,5 +1,8 @@
 defmodule WalletApi.CurrencyConversion.GoldExchangeRateAPI do
-  alias WalletApi.ERROR
+  @moduledoc """
+   get gold exchange rate from firebase database
+  """
+  alias WalletApi.DisplayError
   @database_url Application.fetch_env!(:walletapi, :firebase_database_url)
   # behavior added to mock query_exchange_rate() for testing.
   @behaviour WalletAPI.Resolver.CurrencyConversion.ExchangeRateBehaviour
@@ -22,7 +25,7 @@ defmodule WalletApi.CurrencyConversion.GoldExchangeRateAPI do
       end
 
     if(!currency_code) do
-      raise ERROR, message: "No currency code specified"
+      raise DisplayError, message: "No currency code specified"
     end
 
     response = get_exchange_rate_behaviour().query_exchange_rate(source_currency_code, currency_code, timestamp)

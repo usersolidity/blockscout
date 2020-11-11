@@ -1,4 +1,7 @@
 defmodule WalletAPI.Resolver.TransactionResolver.TokenTransaction do
+  @moduledoc """
+    convert transaction into TokenTransaction type
+  """
   alias WalletApi.Utils
   @faucet_address Application.fetch_env!(:walletapi, :faucet_address)
   @verification_rewards_address Application.fetch_env!(:walletapi, :verification_rewards_address)
@@ -49,27 +52,35 @@ defmodule WalletAPI.Resolver.TransactionResolver.TokenTransaction do
     }
   end
 
+  defp check_event_type(event_to_address, address1, event_from_address, address2) do
+    if is_equal(event_to_address, address1) && is_equal(event_from_address, address2) do
+      true
+    else
+      false
+    end
+  end
+
   defp resolve_transfer_event_type(user_address, event_to_address, event_from_address) do
     attestation_address = Utils.get_contract_address("Attestations")
     escrow_address = Utils.get_contract_address("Escrow")
 
     cond do
-      is_equal(event_to_address, user_address) && is_equal(event_from_address, @faucet_address) ->
+      check_event_type(event_to_address, user_address, event_from_address, @faucet_address) ->
         [:faucet, @faucet_address]
 
-      is_equal(event_to_address, attestation_address) && is_equal(event_from_address, user_address) ->
+      check_event_type(event_to_address, attestation_address, event_from_address, user_address) ->
         [:verification_fee, attestation_address]
 
-      is_equal(event_to_address, user_address) && is_equal(event_from_address, @verification_rewards_address) ->
+      check_event_type(event_to_address, user_address, event_from_address, @verification_rewards_address) ->
         [:verification_reward, @verification_rewards_address]
 
-      is_equal(event_to_address, user_address) && is_equal(event_from_address, escrow_address) ->
+      check_event_type(event_to_address, user_address, event_from_address, escrow_address) ->
         [:escrow_received, event_from_address]
 
       is_equal(event_to_address, user_address) ->
         [:received, event_from_address]
 
-      is_equal(event_from_address, user_address) && is_equal(event_to_address, escrow_address) ->
+      check_event_type(event_to_address, escrow_address, event_from_address, user_address) ->
         [:escrow_sent, event_to_address]
 
       is_equal(event_from_address, user_address) ->

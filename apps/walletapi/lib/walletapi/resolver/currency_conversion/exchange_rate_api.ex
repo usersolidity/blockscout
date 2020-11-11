@@ -1,5 +1,8 @@
 defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
-  alias WalletApi.ERROR
+  @moduledoc """
+   get exchange rate from currency layer API
+  """
+  alias WalletApi.DisplayError
   @api_url Application.fetch_env!(:walletapi, :exchange_rates_api)
   # behavior added to mock query_exchange_rate() for testing.
   @behaviour WalletAPI.Resolver.CurrencyConversion.ExchangeRateBehaviour
@@ -18,7 +21,7 @@ defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
 
   def get_exchange_rate(source_currency_code, currency_code, timestamp) do
     if(!currency_code) do
-      raise ERROR, message: "No currency code specified"
+      raise DisplayError, message: "No currency code specified"
     end
 
     pair = source_currency_code <> currency_code
@@ -28,21 +31,20 @@ defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
 
   def query_exchange_rate(source_currency_code, _currency_code, timestamp) do
     time_in_ms =
-      cond do
-        timestamp === nil -> DateTime.utc_now()
-        true -> DateTime.from_unix!(timestamp, :millisecond)
+      if timestamp === nil do
+        DateTime.utc_now()
+      else
+        DateTime.from_unix!(timestamp, :millisecond)
       end
 
     # is08601 format : YYYY-MM-DD
     date = Date.to_iso8601(time_in_ms)
 
-    cond do
-      # if given time within last 24 hours - get current exchange rates from API.
-      DateTime.diff(DateTime.utc_now(), time_in_ms) < 24 * 60 * 60 ->
-        get_data_from_api(source_currency_code, date)
-
-      true ->
-        get_data_from_cache(source_currency_code, date)
+    # if given time within last 24 hours - get current exchange rates from API.
+    if DateTime.diff(DateTime.utc_now(), time_in_ms) < 24 * 60 * 60 do
+      get_data_from_api(source_currency_code, date)
+    else
+      get_data_from_cache(source_currency_code, date)
     end
   end
 
@@ -56,13 +58,22 @@ defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
     # ***************************************
     data_from_cache = ConCache.get(:exchange_rate_cache, source_currency_code <> "-" <> date)
 
-    cond do
-      # cache miss get the data from the api
-      data_from_cache == nil ->
-        get_data_from_api(source_currency_code, date)
+    # cache miss get the data from the api
+    if data_from_cache == nil do
+      get_data_from_api(source_currency_code, date)
+    else
+      data_from_cache
+    end
+  end
 
-      true ->
-        data_from_cache
+  defp return_response(source_currency_code, date, response) do
+    if Map.get(response, "success") == false do
+      IO.puts("Failed to fetch Exchange Rates")
+      Logger.error(fn -> "Failed to fetch Exchange Rates: #{inspect(response)}" end)
+      {:error, :not_found}
+    else
+      ConCache.put(:exchange_rate_cache, source_currency_code <> "-" <> date, response)
+      response
     end
   end
 
@@ -74,16 +85,7 @@ defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
     case HTTPoison.get(@api_url <> path <> req_body) do
       {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
         response = Poison.decode!(body)
-
-        cond do
-          Map.get(response, "success") == false ->
-            Logger.error(fn -> "Failed to fetch Exchange Rates: #{inspect(response)}" end)
-            {:error, :not_found}
-
-          true ->
-            ConCache.put(:exchange_rate_cache, source_currency_code <> "-" <> date, response)
-            response
-        end
+        return_response(source_currency_code, date, response)
 
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, :not_found}

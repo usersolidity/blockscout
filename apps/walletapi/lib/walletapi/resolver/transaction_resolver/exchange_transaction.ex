@@ -1,4 +1,20 @@
 defmodule WalletAPI.Resolver.TransactionResolver.ExchangeTransaction do
+  @moduledoc """
+    convert transaction into ExchangeTransaction type
+  """
+  defp get_implied_exchange_rate(in_transfer, out_transfer) do
+    cond do
+      in_transfer[:token] == "cGLD" && out_transfer[:token] == "cUSD" ->
+        %{"cGLD/cUSD" => Decimal.div(out_transfer[:value], in_transfer[:value])}
+
+      out_transfer[:token] == "cGLD" && in_transfer[:token] == "cUSD" ->
+        %{"cGLD/cUSD" => Decimal.div(in_transfer[:value], out_transfer[:value])}
+
+      true ->
+        {:error}
+    end
+  end
+
   def get_exchange_transaction(user_address, token, transfer_tx, transfers) do
     wei = Decimal.new(1_000_000_000_000_000_000)
     %{transaction_hash: hash, block_number: block, timestamp: timestamp} = transfer_tx
@@ -29,14 +45,7 @@ defmodule WalletAPI.Resolver.TransactionResolver.ExchangeTransaction do
     if(token_transfer == []) do
       "undefined"
     else
-      implied_exchange_rate =
-        cond do
-          in_transfer[:token] == "cGLD" && out_transfer[:token] == "cUSD" ->
-            %{"cGLD/cUSD" => Decimal.div(out_transfer[:value], in_transfer[:value])}
-
-          out_transfer[:token] == "cGLD" && in_transfer[:token] == "cUSD" ->
-            %{"cGLD/cUSD" => Decimal.div(in_transfer[:value], out_transfer[:value])}
-        end
+      implied_exchange_rate = get_implied_exchange_rate(in_transfer, out_transfer)
 
       value =
         Decimal.div(

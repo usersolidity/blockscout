@@ -1,3 +1,3 @@
-defmodule WalletApi.ERROR do
+defmodule WalletApi.DisplayError do
   defexception message: "default message"
 end

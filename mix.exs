@@ -31,7 +31,8 @@ defmodule BlockScout.Mixfile do
             block_scout_web: :permanent,
             ethereum_jsonrpc: :permanent,
             explorer: :permanent,
-            indexer: :permanent
+            indexer: :permanent,
+            walletapi: :permanent
           ]
         ]
       ]

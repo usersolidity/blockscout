@@ -1,6 +1,9 @@
 defmodule WalletApi.Plug.Context do
+  @moduledoc """
+    Plug for adding context
+  """
   @behaviour Plug
-
+  alias Absinthe.Plug, as: AbsinthePlug
   def init(opts), do: opts
 
   def call(conn, _) do
@@ -18,6 +21,6 @@ defmodule WalletApi.Plug.Context do
     }
 
     # Absinthe.Plug calls Absinthe.run() with the options added to the `conn`.
-    Absinthe.Plug.put_options(conn, context: context)
+    AbsinthePlug.put_options(conn, context: context)
   end
 end
