@@ -3,6 +3,7 @@ FROM bitwalker/alpine-elixir-phoenix:1.9.0
 RUN apk --no-cache --update add alpine-sdk gmp-dev automake libtool inotify-tools autoconf python
 
 EXPOSE 4000
+EXPOSE 4002
 
 ENV PORT=4000 \
     MIX_ENV="prod" \
@@ -14,6 +15,7 @@ ADD apps/block_scout_web/mix.exs ./apps/block_scout_web/
 ADD apps/explorer/mix.exs ./apps/explorer/
 ADD apps/ethereum_jsonrpc/mix.exs ./apps/ethereum_jsonrpc/
 ADD apps/indexer/mix.exs ./apps/indexer/
+ADD apps/walletapi/mix.exs ./apps/walletapi/
 
 RUN mix do deps.get, deps.compile
 

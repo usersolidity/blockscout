@@ -13,10 +13,10 @@ config :walletapi, WalletApi.Endpoint,
   force_ssl: false,
   secret_key_base: System.get_env("SECRET_KEY_BASE"),
   check_origin: System.get_env("CHECK_ORIGIN") || false,
-  http: [port: System.get_env("WALLETAPI_PORT")],
+  http: [port: System.get_env("WALLETAPI_PORT") || 4002],
   url: [
     scheme: System.get_env("BLOCKSCOUT_PROTOCOL") || "https",
-    port: System.get_env("WALLETAPI_PORT"),
+    port: System.get_env("WALLETAPI_PORT")|| 4002,
     host: System.get_env("BLOCKSCOUT_HOST") || "localhost",
     path: System.get_env("NETWORK_PATH") || "/"
   ]

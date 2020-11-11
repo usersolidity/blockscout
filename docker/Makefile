@@ -46,6 +46,20 @@ endif
 ifdef NETWORK_PATH
 	BLOCKSCOUT_CONTAINNER_PARAMS += -e 'NETWORK_PATH=$(NETWORK_PATH)'
 endif
+ifdef WALLETAPI_PORT
+	BLOCKSCOUT_CONTAINNER_PARAMS += -e 'WALLETAPI_PORT=$(WALLETAPI_PORT)'
+endif
+ifdef CURRENCY_LAYER_ACCESS_KEY
+	BLOCKSCOUT_CONTAINNER_PARAMS += -e 'CURRENCY_LAYER_ACCESS_KEY=$(CURRENCY_LAYER_ACCESS_KEY)'
+endif
+
+#Mismatch between above HOST url and default DATABASE values in explorer/config/prod.exs
+#Added Values as per the the above DB_URL
+BLOCKSCOUT_CONTAINNER_PARAMS += -e 'DATABASE_USER=postgres'
+BLOCKSCOUT_CONTAINNER_PARAMS += -e 'DATABASE_PASSWORD='
+BLOCKSCOUT_CONTAINNER_PARAMS += -e 'DATABASE_DB=explorer'
+BLOCKSCOUT_CONTAINNER_PARAMS += -e 'DATABASE_HOSTNAME=${HOST}'
+BLOCKSCOUT_CONTAINNER_PARAMS += -e 'ECTO_USE_SSL=false'
 
 HAS_BLOCKSCOUT_IMAGE := $(shell docker images | grep ${DOCKER_IMAGE})
 build: 
@@ -91,6 +105,7 @@ start: build postgres
 	@docker run --rm --name $(BS_CONTAINER_NAME) \
 					$(BLOCKSCOUT_CONTAINNER_PARAMS) \
 					-p 4000:4000 \
+					-p 4002:4002 \
 					$(DOCKER_IMAGE) /bin/sh -c "mix phx.server"
 
 run: start

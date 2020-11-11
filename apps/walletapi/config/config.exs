@@ -9,7 +9,6 @@ use Mix.Config
 
 config :walletapi,
   exchange_rates_api: "https://apilayer.net/api",
-  exchange_rates_access_key: System.get_env("CURRENCY_LAYER_ACCESS_KEY"),
   faucet_address: "0x456f41406B32c45D59E539e4BBA3D7898c3584dA",
   registry_contract_address: "0x000000000000000000000000000000000000ce10",
   ecto_repos: [Explorer.Repo]

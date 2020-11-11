@@ -1,7 +1,6 @@
 defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
   alias WalletApi.ERROR
   @api_url Application.fetch_env!(:walletapi, :exchange_rates_api)
-  @access_key Application.fetch_env!(:walletapi, :exchange_rates_access_key)
   #behavior added to mock query_exchange_rate() for testing.
   @behaviour WalletAPI.Resolver.CurrencyConversion.ExchangeRateBehaviour
   require Logger
@@ -63,7 +62,8 @@ defmodule WalletApi.CurrencyConversion.ExchangeRateAPI do
 
   defp get_data_from_api(source_currency_code, date) do
     path = "/historical?"
-    req_body = URI.encode_query(access_key: @access_key, source: source_currency_code, date: date)
+    access_key = System.get_env("CURRENCY_LAYER_ACCESS_KEY")
+    req_body = URI.encode_query(access_key: access_key, source: source_currency_code, date: date)
     case HTTPoison.get(@api_url<>path<>req_body) do
       {:ok, %HTTPoison.Response{body: body, status_code: 200}} ->
         response = Poison.decode!(body)
