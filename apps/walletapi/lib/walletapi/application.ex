@@ -9,13 +9,13 @@ defmodule Walletapi.Application do
     children = [
       # Start the Endpoint (http/https)
       WalletApi.Endpoint,
-      #Start the cache service to store exchange rate:
-      #ttl: check after every day
-      #global_ttl: store it for 1 year
+      # Start the cache service to store exchange rate:
+      # ttl: check after every day
+      # global_ttl: store it for 1 year
       con_cache_child_spec(:exchange_rate_cache, 24 * 60 * 60, 365 * 24 * 60 * 60, true),
-      #Start the cache service to store contract_address
-      #ttl: check after every hour
-      #global_ttl: store it for 1 day
+      # Start the cache service to store contract_address
+      # ttl: check after every hour
+      # global_ttl: store it for 1 day
       con_cache_child_spec(:contract_address_cache, 60 * 60, 24 * 60 * 60, false)
     ]
 

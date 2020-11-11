@@ -34,6 +34,7 @@ config :walletapi,
 
 config :ethereumex,
   url: "https://alfajores-forno.celo-testnet.org"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

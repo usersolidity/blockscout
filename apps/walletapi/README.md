@@ -24,13 +24,6 @@ To run walletapi using docker:
   `export CURRENCY_LAYER_ACCESS_KEY=[ACCESS_KEY]`
   `make start`
   
-
-To Test the project:
-
-  * Change the environment `export MIX_ENV=test`
-  * Go to walletapi folder `cd apps/walletapi/`
-  * Run `mix test`
-
 ## EndPoints
 
 There are two endpoints provided by the walletapi

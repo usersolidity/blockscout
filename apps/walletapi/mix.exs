@@ -51,7 +51,8 @@ defmodule Walletapi.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:absinthe, "~> 1.4"},
-      {:absinthe_plug, git: "https://github.com/ayrat555/absinthe_plug.git", branch: "ab-enable-default-query", override: true},
+      {:absinthe_plug,
+       git: "https://github.com/ayrat555/absinthe_plug.git", branch: "ab-enable-default-query", override: true},
       {:absinthe_relay, "~> 1.4"},
       {:poison, "~> 3.1"},
       {:httpoison, "~> 1.0", override: true},
@@ -60,7 +61,8 @@ defmodule Walletapi.MixProject do
       {:explorer, in_umbrella: true},
       {:indexer, in_umbrella: true, runtime: false},
       {:ethereum_jsonrpc, in_umbrella: true},
-      {:con_cache, "~> 0.13.1"}
+      {:con_cache, "~> 0.13.1"},
+      {:mox, "~> 0.5"}
     ]
   end
 

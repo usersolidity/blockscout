@@ -23,5 +23,6 @@ config :walletapi,
 
 config :ethereumex,
   url: "https://alfajores-forno.celo-testnet.org"
+
 # Print only warnings and errors during test
 config :logger, level: :warn

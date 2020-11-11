@@ -16,11 +16,12 @@ config :walletapi, WalletApi.Endpoint,
   http: [port: System.get_env("WALLETAPI_PORT") || 4002],
   url: [
     scheme: System.get_env("BLOCKSCOUT_PROTOCOL") || "https",
-    port: System.get_env("WALLETAPI_PORT")|| 4002,
+    port: System.get_env("WALLETAPI_PORT") || 4002,
     host: System.get_env("BLOCKSCOUT_HOST") || "localhost",
     path: System.get_env("NETWORK_PATH") || "/"
   ]
-  # cache_static_manifest: "priv/static/cache_manifest.json"
+
+# cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :walletapi,
   firebase_database_url: "https://celo-mobile-mainnet.firebaseio.com/",
