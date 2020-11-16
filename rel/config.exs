@@ -75,7 +75,8 @@ release :blockscout do
     block_scout_web: :permanent,
     ethereum_jsonrpc: :permanent,
     explorer: :permanent,
-    indexer: :permanent
+    indexer: :permanent,
+    walletapi: :permanent
   ]
   set commands: [
     migrate: "rel/commands/migrate.sh",

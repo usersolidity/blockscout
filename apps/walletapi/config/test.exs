@@ -12,6 +12,7 @@ use Mix.Config
 # you can enable the server option below.
 config :walletapi, WalletApi.Endpoint,
   http: [port: System.get_env("WALLETAPI_PORT")],
+  secret_key_base: "27Swe6KtEtmN37WyEYRjKWyxYULNtrxlkCEKur4qoV+Lwtk8lafsR16ifz1XBBYj",
   server: false
 
 config :walletapi,

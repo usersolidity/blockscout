@@ -30,7 +30,7 @@ defmodule Walletapi.MixProject do
   def application do
     [
       mod: {Walletapi.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :con_cache]
     ]
   end
 
