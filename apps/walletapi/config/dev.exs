@@ -20,6 +20,7 @@ config :walletapi, WalletApi.Endpoint,
     certfile: System.get_env("CERTFILE") || "priv/cert/selfsigned.pem",
     keyfile: System.get_env("KEYFILE") || "priv/cert/selfsigned_key.pem"
   ],
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   debug_errors: true,
   code_reloader: true,
   check_origin: false,

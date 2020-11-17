@@ -20,7 +20,7 @@ defmodule Walletapi.Application do
       con_cache_child_spec(:contract_address_cache, 60 * 60, 24 * 60 * 60, false)
     ]
 
-    opts = [strategy: :one_for_one, name: Walletapi.Supervisor]
+    opts = [strategy: :one_for_one, name: WalletApi.Supervisor]
     Supervisor.start_link(children, opts)
   end
 

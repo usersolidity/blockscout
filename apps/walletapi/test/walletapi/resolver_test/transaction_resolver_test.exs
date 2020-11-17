@@ -5,6 +5,14 @@ defmodule WalletApi.TransactionResolverTest do
 
   setup :verify_on_exit!
 
+  setup do
+    Supervisor.terminate_child(WalletApi.Supervisor, {ConCache, :exchange_rate_cache})
+    Supervisor.restart_child(WalletApi.Supervisor, {ConCache, :exchange_rate_cache})
+    Supervisor.terminate_child(WalletApi.Supervisor, {ConCache, :contract_address_cache})
+    Supervisor.restart_child(WalletApi.Supervisor, {ConCache, :contract_address_cache})
+    :ok
+  end
+
   @transaction_data [
     %{
       block_number: 90608,
@@ -303,6 +311,7 @@ defmodule WalletApi.TransactionResolverTest do
 
   describe "transactionResolver" do
     test "should get dollar transaction and label them properly" do
+
       GetTransactionBehaviorMock
       |> expect(:get_transaction_data, fn _args ->
         @transaction_data
@@ -432,6 +441,7 @@ defmodule WalletApi.TransactionResolverTest do
     end
 
     test "should get gold transaction and label them properly" do
+
       GetTransactionBehaviorMock
       |> expect(:get_transaction_data, fn _args ->
         @transaction_data
@@ -561,6 +571,7 @@ defmodule WalletApi.TransactionResolverTest do
     end
 
     test "should get correct response for graphql queries", %{conn: conn} do
+      IO.inspect(conn)
       GetTransactionBehaviorMock
       |> expect(:get_transaction_data, fn _args ->
         @transaction_data

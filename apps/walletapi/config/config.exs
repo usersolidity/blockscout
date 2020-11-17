@@ -20,7 +20,6 @@ config :walletapi, WalletApi.Endpoint,
     host: System.get_env("BLOCKSCOUT_HOST") || "localhost",
     path: System.get_env("NETWORK_PATH") || "/"
   ],
-  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   render_errors: [view: WalletApi.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Walletapi.PubSub
 
