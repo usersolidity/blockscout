@@ -77,7 +77,13 @@ defmodule Walletapi.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      test: [
+        "ecto.create --quiet",
+        "ecto.migrate --quiet",
+        # to match behavior of `mix test` from project root, which needs to not start applications for `indexer` to
+        # prevent its supervision tree from starting, which is undesirable in test
+        "test --no-start"
+      ]
     ]
   end
 end
