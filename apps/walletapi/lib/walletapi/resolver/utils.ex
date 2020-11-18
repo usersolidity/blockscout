@@ -4,7 +4,7 @@ defmodule WalletApi.Utils do
     2. Gets the attestation and escrow contract address from registry
   """
   alias ABI.TypeDecoder
-  alias Ethereumex.HttpClient
+  @forno_url Application.fetch_env!(:walletapi, :forno_url)
   @registry_address Application.fetch_env!(:walletapi, :registry_contract_address)
   def format_comment_string(function_call_hex) do
     # '0xe1d6aceb' is the function selector for the transfer with comment function
@@ -35,17 +35,41 @@ defmodule WalletApi.Utils do
   end
 
   defp get_address_from_registry(contract) do
-    abi_data = ABI.encode("getAddressForString(string)", [contract])
-    abi_encoded_data = abi_data |> Base.encode16(case: :lower)
+    functions = [
+      %{contract_address: @registry_address, function_name: "getAddressForString", args: [contract]}
+    ]
 
-    {:ok, balance_bytes} =
-      HttpClient.eth_call(%{
-        data: "0x" <> abi_encoded_data,
-        to: @registry_address
-      })
+    json_arguments = [
+      transport: EthereumJSONRPC.HTTP,
+      transport_options: [
+        http: EthereumJSONRPC.HTTP.HTTPoison,
+        url: @forno_url,
+        http_options: [recv_timeout: :timer.minutes(1), timeout: :timer.minutes(1), hackney: [pool: :ethereum_jsonrpc]]
+      ],
+      variant: EthereumJSONRPC.Geth
+    ]
+
+    abi = [
+      %{
+        "constant" => true,
+        "inputs" => [%{"internalType" => "string", "name" => "identifier", "type" => "string"}],
+        "name" => "getAddressForString",
+        "outputs" => [%{"internalType" => "address", "name" => "", "type" => "address"}],
+        "payable" => false,
+        "stateMutability" => "view",
+        "type" => "function"
+      }
+    ]
+
+    [{:ok, [contract_address]}] =
+      EthereumJSONRPC.execute_contract_functions(
+        functions,
+        abi,
+        json_arguments
+      )
 
     # Get the last 40 character from the address received.
-    address = "0x" <> (balance_bytes |> String.slice((String.length(balance_bytes) - 40)..-1))
+    address = "0x" <> (contract_address |> Base.encode16() |> String.downcase())
     ConCache.put(:contract_address_cache, contract, address)
     address
   end

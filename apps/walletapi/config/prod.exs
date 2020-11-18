@@ -24,14 +24,12 @@ config :walletapi, WalletApi.Endpoint,
 # cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :walletapi,
+  forno_url: "https://forno.celo.org/",
   firebase_database_url: "https://celo-mobile-mainnet.firebaseio.com/",
   verification_rewards_address: "0x00000000000000000000000000000000000verif",
   get_transaction: WalletAPI.Resolver.TransactionResolver.GetTransaction,
   gold_exchange_rate_behaviour: WalletApi.CurrencyConversion.GoldExchangeRateAPI,
   exchange_rate_behaviour: WalletApi.CurrencyConversion.ExchangeRateAPI
-
-config :ethereumex,
-  url: "https://forno.celo.org/"
 
 # Do not print debug messages in production
 # config :logger, level: :info

@@ -56,7 +56,6 @@ defmodule Walletapi.MixProject do
       {:absinthe_relay, "~> 1.4"},
       {:poison, "~> 3.1"},
       {:httpoison, "~> 1.0", override: true},
-      {:ethereumex, "~> 0.6.0", override: true},
       {:ex_abi, github: "poanetwork/ex_abi", branch: "vb-3.0", override: true},
       {:explorer, in_umbrella: true},
       {:indexer, in_umbrella: true, runtime: false},

@@ -27,14 +27,12 @@ config :walletapi, WalletApi.Endpoint,
   watchers: []
 
 config :walletapi,
+  forno_url: "https://alfajores-forno.celo-testnet.org",
   firebase_database_url: "https://celo-mobile-alfajores.firebaseio.com/",
   verification_rewards_address: "0xb4fdaf5f3cd313654aa357299ada901b1d2dd3b5",
   get_transaction: WalletAPI.Resolver.TransactionResolver.GetTransaction,
   gold_exchange_rate_behaviour: WalletApi.CurrencyConversion.GoldExchangeRateAPI,
   exchange_rate_behaviour: WalletApi.CurrencyConversion.ExchangeRateAPI
-
-config :ethereumex,
-  url: "https://alfajores-forno.celo-testnet.org"
 
 # ## SSL Support
 #

@@ -561,8 +561,6 @@ defmodule WalletApi.TransactionResolverTest do
     end
 
     test "should get correct response for graphql queries", %{conn: conn} do
-      IO.inspect(conn)
-
       GetTransactionBehaviorMock
       |> expect(:get_transaction_data, fn _args ->
         @transaction_data

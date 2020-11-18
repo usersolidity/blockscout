@@ -16,14 +16,12 @@ config :walletapi, WalletApi.Endpoint,
   server: false
 
 config :walletapi,
+  forno_url: "https://alfajores-forno.celo-testnet.org",
   firebase_database_url: "https://celo-mobile-alfajores.firebaseio.com/",
   verification_rewards_address: "0xb4fdaf5f3cd313654aa357299ada901b1d2dd3b5",
   get_transaction: GetTransactionBehaviorMock,
   gold_exchange_rate_behaviour: ExchangeRateMock,
   exchange_rate_behaviour: ExchangeRateMock
-
-config :ethereumex,
-  url: "https://alfajores-forno.celo-testnet.org"
 
 # Print only warnings and errors during test
 # config :logger, level: :warn
