@@ -5,6 +5,15 @@ defmodule WalletApi.Schema.Types do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
+  @token_transfer_types [
+    :received,
+    :escrow_received,
+    :escrow_sent,
+    :sent,
+    :faucet,
+    :verification_fee,
+    :verification_reward
+  ]
   import_types(Absinthe.Type.Custom)
   import_types(WalletApi.Schema.Scalars)
 
@@ -158,15 +167,7 @@ defmodule WalletApi.Schema.Types do
     if(obj.type == :exchange) do
       :token_exchange
     else
-      if(
-        obj.type == :received ||
-          obj.type == :escrow_received ||
-          obj.type == :escrow_sent ||
-          obj.type == :sent ||
-          obj.type == :faucet ||
-          obj.type == :verification_fee ||
-          obj.type == :verification_reward
-      ) do
+      if Enum.member?(@token_transfer_types, obj.type) do
         :token_transfer
       end
     end
