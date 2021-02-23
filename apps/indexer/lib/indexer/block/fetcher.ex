@@ -151,6 +151,7 @@ defmodule Indexer.Block.Fetcher do
         cusd: stable_token_usd,
         ceur: stable_token_eur
       }
+
       {:ok, tokens, oracle_address}
     else
       err ->
@@ -189,11 +190,13 @@ defmodule Indexer.Block.Fetcher do
          transactions_with_receipts = Receipts.put(transactions_params_without_receipts, receipts),
          %{token_transfers: normal_token_transfers, tokens: normal_tokens} = TokenTransfers.parse(logs),
          celo_token_enabled = config(:enable_gold_token),
-         {:ok, tokens = %{
-           celo: celo_token,
-           cusd: stable_token_usd,
-           ceur: stable_token_eur
-         }, oracle_address} <-
+         {:ok,
+          tokens = %{
+            celo: celo_token,
+            cusd: stable_token_usd,
+            ceur: stable_token_eur
+          },
+          oracle_address} <-
            (if celo_token_enabled do
               read_addresses()
             else
