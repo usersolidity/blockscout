@@ -70,15 +70,22 @@
       </div>
 
       <div class="cookie-banner" hidden data-selector="cookie-banner">
-        <div class="cookie-banner-text text-center p-4" data-selector="cookies-banner">
-          <%= gettext("We use cookies on our site to allow tracking of pages and links to help us improve your experience. By selecting Agree, you consent to our use of cookies in accordance with our ") %>
-          <%= link(
-            gettext("Privacy Policy."),
-            to: "https://celo.org/privacy"
-          ) %>
-          <div class="mt-3">
-            <button class="btn btn-disagree d-inline mr-4" data-selector="decline-cookies">Disagree</button>
-            <button class="btn btn-agree d-inline" data-selector="accept-cookies">Agree</button>
+        <div class="cookie-banner-content p-4">
+          <div>
+            <%= gettext("Allow tracking of my activity on ") %>
+            <%= link(
+              gettext("explorer.celo.org"),
+              to: "https://explorer.celo.org"
+            ) %>
+            <%= gettext(" to help improve this website. Understand more in our ") %>
+            <%= link(
+              gettext("Privacy Policy."),
+              to: "https://celo.org/privacy"
+            ) %>
+          </div>
+          <div class="cookie-banner-btns">
+            <button class="btn btn-disagree d-inline mr-4" data-selector="decline-cookies">No</button>
+            <button class="btn btn-agree d-inline" data-selector="accept-cookies">Yes</button>
           </div>
         </div>
       </div>
