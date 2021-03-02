@@ -31,11 +31,13 @@
         'Price': '<%= gettext("Price") %>',
         'Ether': '<%= gettext("Ether") %>'
       }
+      // make analytics key variable accessible from js files
+      window.ANALYTICS_KEY = '<%= segment_key() %>'
     </script>
   </head>
 
   <body>
-    <script>
+    <script type="module">
       function applyDarkMode() {
         if (localStorage.getItem("current-color-mode") === "dark") {
           document.body.className += " " + "dark-theme-applied";
@@ -44,7 +46,7 @@
       }
       window.onload = applyDarkMode()
     </script>
-    <div class="layout-container" data-page="app-container">
+    <div class="layout-container">
       <%= if not Explorer.Chain.finished_indexing?() do %>
         <div class="alert alert-warning text-center mb-0 p-3" data-selector="indexed-status">
           <span class="loading-spinner-small mr-2">
@@ -56,16 +58,7 @@
         </div>
       <% end %>
 
-      <div class="survey-banner alert text-center mb-0 p-3" hidden data-selector="survey-banner">
-        <a class="survey-banner-dismiss d-inline p-2">
-          <i class="fas fa-times"></i>
-        </a>
-        <%= gettext("Help improve the Celo Block Explorer! Please take a quick moment to answer ") %>
-        <%= link(
-          gettext("this quick feedback survey."),
-          to: "https://forms.gle/7ob72NzoC1dbvKuB7"
-        ) %>
-      </div>
+      <%= render BlockScoutWeb.LayoutView, "_cookie_banner.html", assigns %>
       <%= render BlockScoutWeb.LayoutView, "_topnav.html", assigns %>
 
       <main>
