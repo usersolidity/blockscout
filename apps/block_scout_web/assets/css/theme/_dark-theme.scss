@@ -71,6 +71,14 @@ $labels-dark: #8a8dba; // header nav, labels
 		filter: invert(1);
 	}
 
+	// cookie banner
+	.cookie-banner {
+		background: $dark-primary;
+		a {
+			color: #fff !important;
+		}
+	}
+
 	// footer
 	.footer {
 		background: $dark-light-bg;
